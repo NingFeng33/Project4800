@@ -1,0 +1,98 @@
+install mysql:
+brew install mysql@8.4
+
+start mysql server:
+mysql.server start
+mysql -u username -p
+
+Then create database on these commands:
+-- Create the database named Project4800
+CREATE DATABASE Project4800;
+
+-- Select the Project4800 database
+USE Project4800;
+
+CREATE TABLE Roles (
+    role_id INT AUTO_INCREMENT PRIMARY KEY,
+    role_name VARCHAR(255) NOT NULL,
+    role_description TEXT
+);
+
+-- Creating table for 'Room'
+CREATE TABLE Room (
+    room_id INT AUTO_INCREMENT PRIMARY KEY,
+    room_status VARCHAR(100),
+    room_number VARCHAR(100),
+    capacity INT
+);
+
+-- Creating table for 'Program'
+CREATE TABLE Program (
+    program_id INT AUTO_INCREMENT PRIMARY KEY,
+    program_name VARCHAR(255)
+);
+
+-- Creating table for 'Faculty'
+CREATE TABLE Faculty (
+    faculty_id INT AUTO_INCREMENT PRIMARY KEY,
+    faculty_name VARCHAR(255)
+);
+
+-- Creating table for 'Class'
+CREATE TABLE Class (
+    class_id INT AUTO_INCREMENT PRIMARY KEY,
+    class_number VARCHAR(100)
+);
+
+-- Creating table for 'User'
+CREATE TABLE User (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    F_Name VARCHAR(255),
+    L_Name VARCHAR(255),
+    role_id INT,
+    password VARCHAR(255),  -- Consider changing VARCHAR size based on the hash used
+    FOREIGN KEY (role_id) REFERENCES Roles(role_id)
+);
+
+-- Creating table for 'Courses'
+CREATE TABLE Courses (
+    course_id INT AUTO_INCREMENT PRIMARY KEY,
+    course_code VARCHAR(100) UNIQUE,
+    course_name VARCHAR(255),
+    faculty_id INT,
+    class_id INT,
+    user_id INT,
+    program_id INT,
+    FOREIGN KEY (faculty_id) REFERENCES Faculty(faculty_id),
+    FOREIGN KEY (class_id) REFERENCES Class(class_id),
+    FOREIGN KEY (user_id) REFERENCES User(user_id),
+    FOREIGN KEY (program_id) REFERENCES Program(program_id)
+);
+
+-- Creating table for 'Room_Rental'
+CREATE TABLE Room_Rental (
+    rental_id INT AUTO_INCREMENT PRIMARY KEY,
+    room_id INT,
+    renter_name VARCHAR(255),
+    start_time DATETIME,
+    end_time DATETIME,
+    purpose TEXT,
+    FOREIGN KEY (room_id) REFERENCES Room(room_id)
+);
+
+-- Creating table for 'Room_Booking'
+CREATE TABLE Room_Booking (
+    book_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_status VARCHAR(100),
+    room_id INT,
+    course_id INT,
+    start_time DATETIME,
+    end_time DATETIME,
+    booking_date DATE,
+    FOREIGN KEY (room_id) REFERENCES Room(room_id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+
+-----------------------------------------------------------------
+If need modify this database except adding data into this database for own
+testing, please update this file and infom the  whole teammates 
