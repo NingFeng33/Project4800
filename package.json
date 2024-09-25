@@ -1,7 +1,7 @@
 {
   "name": "project4800",
   "version": "1.0.0",
-  "description": "",
+  "description": "- git clone https://github.com/NingFeng33/Project4800.git - cd Project4800 - npm init -y - npm install express mysql2 dotenv",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,5 +13,13 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "mysql2": "^3.11.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NingFeng33/Project4800.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NingFeng33/Project4800/issues"
+  },
+  "homepage": "https://github.com/NingFeng33/Project4800#readme"
 }
