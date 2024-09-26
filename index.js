@@ -21,3 +21,8 @@ const PORT = process.env.PORT || 3000;
         // Handle failure more gracefully here if necessary
     }
 })();
+
+// In your index.js or wherever your routes are defined
+app.get('/', (req, res) => {
+    res.send('Welcome to Project4800');
+});
