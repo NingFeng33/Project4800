@@ -1,28 +1,27 @@
-// index.js
 require('dotenv').config();
 const express = require('express');
 const app = express();
 const initializeDatabase = require('./config/db');
-// Middleware to parse JSON
+
+// Middleware
 app.use(express.json());
 
-// Start the server
-const PORT = process.env.PORT || 3000;
+// Route definition
+app.get('/', (req, res) => {
+    res.send('Welcome to Project4800');
+});
 
+// Server and database initialization
 (async () => {
     try {
         const db = await initializeDatabase();
         console.log('Database connected successfully!');
+        const PORT = process.env.PORT || 3000;
         app.listen(PORT, () => {
             console.log(`Server running on http://localhost:${PORT}`);
         });
     } catch (error) {
         console.error('Failed to connect to the database:', error);
-        // Handle failure more gracefully here if necessary
     }
 })();
 
-// In your index.js or wherever your routes are defined
-app.get('/', (req, res) => {
-    res.send('Welcome to Project4800');
-});
