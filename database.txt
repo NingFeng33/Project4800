@@ -207,3 +207,29 @@ INSERT INTO Courses (course_code, course_name, program_id) VALUES
 ('AVAM 3415', 'Composites', 3),
 ('AVAM 4450', 'AMO', 3);
 
+ALTER TABLE Room
+ADD COLUMN category VARCHAR(100);
+
+-- Update categories for "Class" rooms
+UPDATE Room
+SET category = 'Class'
+WHERE room_number IN (
+    '152', '153', '211', '212', '220', '221', '223/224', '226', '252',
+    '266', '267', '272', '281', '283', '284', '312', '321', '322', '324',
+    '325', '327', '330', '331', '343'
+);
+
+-- Update categories for "Shop" rooms
+UPDATE Room
+SET category = 'Shop'
+WHERE room_number IN (
+    '154', '145', '141', '130H', '130J', '130c/b', '130', '230', '231', '233',
+    '234', '241', '253', '254', '261', '263'
+);
+
+-- Update categories for "Special" rooms
+UPDATE Room
+SET category = 'Special'
+WHERE room_number IN (
+    '198', '196', '262', '271', '282', '311', '342'
+);
