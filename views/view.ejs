@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Calendar</title>
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css' rel='stylesheet' />
+</head>
+
+<body>
+    <!-- Calendar container -->
+    <div id='calendar' style="width: 80%; max-width: 600px; margin: 0 auto; height: 600px;"></div>
+
+
+    <!-- FullCalendar JavaScript -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js'></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: '/api/bookings' 
+            });
+            calendar.render();
+        });
+    </script>
+</body>
+</html>
