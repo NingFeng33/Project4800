@@ -50,7 +50,8 @@ CREATE TABLE User (
     F_Name VARCHAR(255),
     L_Name VARCHAR(255),
     role_id INT,
-    password VARCHAR(255),  -- Consider changing VARCHAR size based on the hash used
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL  -- fixed
     FOREIGN KEY (role_id) REFERENCES Roles(role_id)
 );
 
