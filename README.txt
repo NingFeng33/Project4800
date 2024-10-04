@@ -1,4 +1,7 @@
-npm dotenv express express-session body-parser sequelize bcrypt connect-session-sequelize mysql2 ejs
+npm install dotenv express express-session body-parser sequelize bcrypt connect-session-sequelize mysql2 ejs
+
+Navigate to ./config/db.js
+Change parameters to your mysql login credential 
 
 Steps to test the code.
 
