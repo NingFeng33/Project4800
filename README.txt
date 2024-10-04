@@ -1,3 +1,5 @@
+npm dotenv express express-session body-parser sequelize bcrypt
+
 Steps to test the code.
 
 1. run node createTestUsers.js to populate test users.
