@@ -1,4 +1,4 @@
-npm dotenv express express-session body-parser sequelize bcrypt
+npm dotenv express express-session body-parser sequelize bcrypt connect-session-sequelize mysql2 ejs
 
 Steps to test the code.
 
