@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/styles/style.css"> <!-- Ensure you have this CSS file in your public/styles directory -->
+    <title>Room Booking</title>
+    <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body>
-    <h1><%= title %></h1>
+    <h1>Room Booking</h1>
     <select id="programSelector"></select>
     <select id="courseSelector"></select>
     <input type="date" id="dateInput">
@@ -14,6 +14,6 @@
     <input type="time" id="endTimeInput">
     <button onclick="checkAvailability()">Check Availability</button>
     <div id="availableRooms"></div>
-    <script src="/script.js"></script> <!-- Your JavaScript file that handles interactions -->
+    <script src="/scripts/booking.ejs"></script> 
 </body>
 </html>
