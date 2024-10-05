@@ -4,7 +4,8 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
-const { sequelize } = require("./config/db");
+
+const { sequelize, User, Role} = require("./models");
 const authRoutes = require("./routes/auth");
 const app = express();
 
@@ -14,6 +15,8 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const sessionStore = new SequelizeStore({ db: sequelize });
+
+
 
 app.use(
   session({
