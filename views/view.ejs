@@ -6,24 +6,79 @@
     <title>Booking Calendar</title>
     <!-- FullCalendar CSS -->
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css' rel='stylesheet' />
+    <style>
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 300px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        #calendar {
+            flex-grow: 1;
+            max-width: 800px;
+            margin-left: 20px;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Calendar container -->
-    <div id='calendar'></div>
+    <div class="container">
+        <!-- Sidebar for filters -->
+        <div class="sidebar">
+            <h3>Filter by Program</h3>
+            <select id="programFilter">
+                <option value="">Select Program</option>
+                <% programs.forEach(function(program) { %>
+                    <option value="<%= program.program_id %>"><%= program.program_name %></option>
+                <% }) %>
+            </select>
 
+            <h3>Filter by Course</h3>
+            <select id="courseFilter">
+                <option value="">Select Course</option>
+                <% courses.forEach(function(course) { %>
+                    <option value="<%= course.course_id %>"><%= course.course_name %></option>
+                <% }) %>
+            </select>
 
-    <!-- FullCalendar JavaScript -->
+            <button id="applyFilter">Apply Filter</button>
+        </div>
+
+        <!-- Calendar container -->
+        <div id='calendar'></div>
+    </div>
+
+    <!-- FullCalendar JS -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js'></script>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
+            const programFilter = document.getElementById('programFilter');
+            const courseFilter = document.getElementById('courseFilter');
+            const applyFilterButton = document.getElementById('applyFilter');
+            const calendarEl = document.getElementById('calendar');
+
+            // FullCalendar initialization
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                events: '/api/bookings' 
+                initialView: 'dayGridMonth',  // Set initial view
+                headerToolbar: {
+                    left: 'prev,next today',  // Previous/Next and Today buttons
+                    center: 'title',          // Title (current date)
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay' // View switch buttons
+                },
+                events: [] // Data will be added later based on the filters
             });
             calendar.render();
+
+            // When the "Apply Filter" button is clicked, fetch and display filtered events on the calendar
+            applyFilterButton.addEventListener('click', function() {
+                const selectedProgram = programFilter.value;
+                const selectedCourse = courseFilter.value;
+            });
         });
     </script>
 </body>

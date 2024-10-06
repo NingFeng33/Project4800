@@ -15,9 +15,26 @@ app.get('/', (req, res) => {
     res.send('Welcome to Project4800');
 });
 
-app.get('/view', (req, res) => {
-    res.render('view'); // This will render view.ejs
+app.get('/view', async (req, res) => {
+    try {
+        const db = await initializeDatabase();
+        console.log('Database connected successfully!');
+
+        // Fetching data for Program and Courses from the database
+        const [programs] = await db.execute('SELECT * FROM Program');
+        console.log('Programs fetched:', programs); // Log the fetched program data
+
+        const [courses] = await db.execute('SELECT * FROM Courses');
+        console.log('Courses fetched:', courses);  // Log the fetched course data
+
+        res.render('view', { programs, courses });  // Send the data to the view
+    } catch (error) {
+        console.error('Error fetching data from database:', error);
+        res.status(500).send('Error fetching data from database');
+    }
 });
+
+
 
 // Server and database initialization
 (async () => {
