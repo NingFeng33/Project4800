@@ -51,3 +51,5 @@ const Room_Booking = sequelize.define(
         timestamps: false
     }
 );
+
+module.exports = {Room_Booking};
