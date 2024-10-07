@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         checkAvailability();
     });
+
+    document.getElementById('programSelector').addEventListener('change', function() {
+        const programId = this.value;
+        loadCourses(programId);
+    });
 });
 
 async function loadPrograms() {
@@ -19,6 +24,25 @@ async function loadPrograms() {
         });
     } catch (error) {
         console.error('Error loading programs:', error);
+    }
+}
+
+async function loadCourses(programId) {
+    const courseSelector = document.getElementById('courseSelector');
+    courseSelector.innerHTML = '<option value="">Select a Course</option>'; // Reset dropdown
+    if (!programId) return;  // Exit if no programId is selected
+
+    try {
+        const response = await fetch(`/api/courses/${programId}`);
+        const courses = await response.json();
+        courses.forEach(course => {
+            const option = document.createElement('option');
+            option.value = course.course_id;
+            option.textContent = course.course_name;
+            courseSelector.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading courses:', error);
     }
 }
 
