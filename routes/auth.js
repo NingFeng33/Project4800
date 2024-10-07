@@ -9,8 +9,9 @@ const {
   logout,
   checkRoomAvailability,
   bookRoom,
-  booking
+  booking,
 } = require("../controllers/authController");
+const { Program } = require('../models/program'); 
 const router = express.Router();
 
 router.get("/", getLogin);
@@ -43,4 +44,15 @@ router.post('/admin/booking/check-availability', isAuthenticated,checkRoomAvaila
 // API to book a room
 router.post('/admin/booking/book-room', isAuthenticated,bookRoom);
 
+
+// Fetch all programs - API route
+router.get('/api/programs', async (req, res) => {
+  try {
+    const programs = await Program.findAll();
+    res.json(programs);
+  } catch (error) {
+    console.error("Failed to fetch programs:", error);
+    res.status(500).json({ message: 'Failed to fetch programs' });
+  }
+});
 module.exports = router;

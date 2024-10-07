@@ -30,6 +30,7 @@ app.use(
 sessionStore.sync();
 
 app.use(authRoutes);
+app.use(express.static('public'));
 
 const PORT = process.env.PORT || 9040;
 app.listen(PORT, () => {
