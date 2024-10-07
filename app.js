@@ -7,7 +7,6 @@ const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 const { sequelize, User, Role} = require("./models");
 const authRoutes = require("./routes/auth");
-const bookingRoutes = require("./routes/bookingRoutes");
 const app = express();
 
 app.set("views", path.join(__dirname, "views"));
@@ -31,7 +30,6 @@ app.use(
 sessionStore.sync();
 
 app.use(authRoutes);
-app.use(bookingRoutes);
 
 const PORT = process.env.PORT || 9040;
 app.listen(PORT, () => {
