@@ -11,8 +11,3 @@ Steps to test the code.
 4. test login and registration with provided credentials in createTestUsers.js
 
 
-ALTER TABLE User ADD COLUMN email VARCHAR(100) NOT NULL UNIQUE;
-ALTER TABLE User ADD COLUMN phone_number VARCHAR(15);
-
-INSERT INTO Roles (role_name, role_description) VALUES ('Admin', 'Administrator with full access');
-INSERT INTO Roles (role_name, role_description) VALUES ('Faculty', 'Faculty access with limited permissions');

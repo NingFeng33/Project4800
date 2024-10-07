@@ -233,3 +233,9 @@ SET category = 'Special'
 WHERE room_number IN (
     '198', '196', '262', '271', '282', '311', '342'
 );
+
+ALTER TABLE User ADD COLUMN email VARCHAR(100) NOT NULL UNIQUE;
+ALTER TABLE User ADD COLUMN phone_number VARCHAR(15);
+
+INSERT INTO Roles (role_name, role_description) VALUES ('Admin', 'Administrator with full access');
+INSERT INTO Roles (role_name, role_description) VALUES ('Faculty', 'Faculty access with limited permissions');
