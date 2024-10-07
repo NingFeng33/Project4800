@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Room Booking</title>
+</head>
+<body>
+  <h1>Room Booking for Courses</h1>
+  
+  <form id="bookingForm">
+    <label for="program">Select Program:</label>
+    <select id="programSelector" name="program">
+      <option value="">Select a Program</option>
+      <!-- Options will be populated by server-side code -->
+    </select>
+    
+    <label for="course">Select Course:</label>
+    <select id="courseSelector" name="course">
+      <option value="">Select a Course</option>
+      <!-- Options will be populated based on selected program -->
+    </select>
+
+    <label for="date">Select Date:</label>
+    <input type="date" id="dateInput" name="date">
+
+    <label for="time">Select Time:</label>
+    <input type="time" id="timeInput" name="time">
+
+    <button type="submit">Check Availability</button>
+  </form>
+
+  <div id="availableRooms">
+    <!-- Available rooms will be displayed here -->
+  </div>
+
+  <script src="/scripts/booking.js"></script>
+</body>
+</html>
