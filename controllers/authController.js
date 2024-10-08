@@ -3,6 +3,7 @@ const { User} = require("../models/user");
 const { Role } = require("../models/role");
 const { Room } = require('../models/room');
 const { Booking } = require('../models/booking');
+const { Course } = require('../models/course');
 //const sequelize = require("../config/db");
 const bcrypt = require("bcrypt");
 
@@ -138,17 +139,38 @@ exports.checkRoomAvailability = async (req, res) => {
 };
 
 
+// exports.bookRoom = async (req, res) => {
+//   const { roomId, date, time, userId } = req.body;
+//   try {
+//       const newBooking = await Booking.create({ roomId, date, time, userId });
+//       res.json({ success: true, message: 'Room booked successfully', bookingId: newBooking.id });
+//   } catch (error) {
+//       console.error('Error booking room:', error);
+//       res.status(500).send('Error booking room');
+//   }
+// };
 exports.bookRoom = async (req, res) => {
-  const { roomId, date, time, userId } = req.body;
+  const { roomId, date, startTime, endTime, courseId } = req.body;
+  console.log('Received booking data:', { roomId, date, startTime, endTime, courseId });
+  // Convert date and time to proper datetime format
+  const formattedStartTime = `${date} ${startTime}:00`;
+  const formattedEndTime = `${date} ${endTime}:00`;
+
   try {
-      const newBooking = await Booking.create({ roomId, date, time, userId });
-      res.json({ success: true, message: 'Room booked successfully', bookingId: newBooking.id });
+      const newBooking = await Booking.create({
+          room_id: roomId,
+          course_id: courseId,
+          start_time: formattedStartTime, // 'YYYY-MM-DD HH:MM:SS'
+          end_time: formattedEndTime,     // 'YYYY-MM-DD HH:MM:SS'
+          booking_date: date,
+          booking_status: 'booked'
+      });
+      res.json({ success: true, message: 'Room booked successfully', bookingId: newBooking.book_id });
   } catch (error) {
       console.error('Error booking room:', error);
       res.status(500).send('Error booking room');
   }
 };
-
 
 // Dashboard
 // exports.getDashboard = (_req, res) => {

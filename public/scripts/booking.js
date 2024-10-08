@@ -124,7 +124,7 @@ function bookRoom() {
     const date = document.getElementById('dateInput').value;
     const startTime = document.getElementById('startTimeInput').value;
     const endTime = document.getElementById('endTimeInput').value;
-
+    const courseId = document.getElementById('courseSelector').value;
     if (!selectedRoomId) {
         alert('Please select a room to book.');
         return;
@@ -138,7 +138,8 @@ function bookRoom() {
             roomId: selectedRoomId,
             date: date,
             startTime: startTime,
-            endTime: endTime
+            endTime: endTime,
+            courseId: courseId
         })
     })
     .then(response => response.json())

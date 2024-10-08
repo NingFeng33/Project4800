@@ -4,7 +4,7 @@ const {sequelize} = require("../config/db");
 const Booking = sequelize.define(
     "Booking",
     {
-        booking_id: {
+        book_id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
@@ -30,21 +30,17 @@ const Booking = sequelize.define(
             }
         },
         start_time: {
-            type: DataTypes.TIME,
+            type: DataTypes.DATE,
             allowNull: true
         },
         end_time: {
-            type: DataTypes.TIME,
+            type: DataTypes.DATE,
             allowNull: true
         },
         booking_date: {
             type: DataTypes.DATE,
             allowNull: true
         },
-        booking_duration: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        }
     },
     {
         tableName: "Room_Booking",
