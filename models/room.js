@@ -39,35 +39,30 @@ Room.hasMany(Booking, {
 
 
 Room.findAvailableRooms = async function(date, startTime, endTime, courseId) {
-    const queryDate = new Date(date);
     const startDateTime = new Date(date + ' ' + startTime);
     const endDateTime = new Date(date + ' ' + endTime);
 
     return await Room.findAll({
         where: {
-            room_status: 'available',
-            [Op.not]: [
-                {
-                    '$Bookings.start_time$': {[Op.lt]: endDateTime},
-                    '$Bookings.end_time$': {[Op.gt]: startDateTime}
-                }
+            [Op.or]: [
+                { room_status: { [Op.ne]: 'unavailable' } }, // Exclude rooms that are explicitly marked as 'unavailable'
+                { room_status: { [Op.is]: null } } // Include rooms where the status is NULL
             ]
         },
         include: [{
             model: Booking,
-            as: 'Bookings',  // Use the alias defined in the association
+            as: 'Bookings',
             required: false,
-            attributes: [],
             where: {
-                course_id: courseId,  
-                [Op.or]: [
-                    {
-                        start_time: {[Op.lt]: endDateTime},
-                        end_time: {[Op.gt]: startDateTime}
-                    }
-                ]
-            }
-        }]
+                [Op.and]: [
+                    { start_time: { [Op.lt]: endDateTime } },
+                    { end_time: { [Op.gt]: startDateTime } }
+                ],
+                course_id: courseId
+            },
+            attributes: []
+        }],
+        logging: console.log // This will log the SQL query to your console
     });
 };
 
