@@ -9,7 +9,6 @@ const {
   logout,
   checkRoomAvailability,
   bookRoom,
-  booking,
 } = require("../controllers/authController");
 const { Program } = require('../models/program'); 
 const { Course } = require('../models/course');
@@ -43,7 +42,7 @@ router.get('/admin/booking', isAuthenticated,(req, res) => {
 router.post('/admin/booking/check-availability', isAuthenticated,checkRoomAvailability);
 //router.post('/booking/check-availability', checkRoomAvailability);
 // API to book a room
-router.post('/booking/book-room', isAuthenticated,bookRoom);
+router.post('/admin/booking/book-room', isAuthenticated,bookRoom);
 
 
 // Fetch all programs - API route

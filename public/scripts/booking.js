@@ -85,9 +85,73 @@ async function checkAvailability() {
 function displayAvailableRooms(rooms) {
     const roomsList = document.getElementById('availableRooms');
     roomsList.innerHTML = ''; // Clear previous entries
+
+    if (rooms.length === 0) {
+        roomsList.innerHTML = '<p>No available rooms found for the selected times.</p>';
+        return;
+    }
+
+    const list = document.createElement('ul');
     rooms.forEach(room => {
-        const roomElement = document.createElement('div');
-        roomElement.textContent = `Room ${room.room_number} is available`;
-        roomsList.appendChild(roomElement);
+        const roomElement = document.createElement('li');
+        roomElement.textContent = `Room Number: ${room.room_number}, Capacity: ${room.capacity}`;
+        
+        // Create a radio button for each room to allow selection
+        const radioButton = document.createElement('input');
+        radioButton.type = 'radio';
+        radioButton.name = 'selectedRoom';
+        radioButton.value = room.room_id;
+
+        // Append radio button and room details to the list item
+        roomElement.appendChild(radioButton);
+        list.appendChild(roomElement);
+    });
+    roomsList.appendChild(list);
+
+    // Optionally, add a submit button if not already part of the form
+    const submitButton = document.createElement('button');
+    submitButton.textContent = 'Book Selected Room';
+    submitButton.type = 'button'; // Change this to 'submit' if part of a form
+    submitButton.onclick = function() {
+        // Function to handle booking the selected room
+        bookRoom();
+    };
+    roomsList.appendChild(submitButton);
+}
+
+function bookRoom() {
+    const selectedRoomId = document.querySelector('input[name="selectedRoom"]:checked').value;
+    const date = document.getElementById('dateInput').value;
+    const startTime = document.getElementById('startTimeInput').value;
+    const endTime = document.getElementById('endTimeInput').value;
+
+    if (!selectedRoomId) {
+        alert('Please select a room to book.');
+        return;
+    }
+
+    // Send the booking request to the server
+    fetch('/admin/booking/book-room', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            roomId: selectedRoomId,
+            date: date,
+            startTime: startTime,
+            endTime: endTime
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Room booked successfully!');
+            // Optionally refresh the page or clear the form
+        } else {
+            alert('Failed to book the room: ' + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error booking the room:', error);
+        alert('Error booking the room');
     });
 }
