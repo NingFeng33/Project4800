@@ -6,27 +6,30 @@
 <body>
   <h1>Room Booking for Courses</h1>
   
-  <form id="bookingForm">
-    <label for="program">Select Program:</label>
+ <form id="bookingForm">
+    <label for="programSelector">Select Program:</label>
     <select id="programSelector" name="program">
       <option value="">Select a Program</option>
       <!-- Options will be populated by server-side code -->
     </select>
     
-    <label for="course">Select Course:</label>
+    <label for="courseSelector">Select Course:</label>
     <select id="courseSelector" name="course">
       <option value="">Select a Course</option>
       <!-- Options will be populated based on selected program -->
     </select>
 
-    <label for="date">Select Date:</label>
+    <label for="dateInput">Select Date:</label>
     <input type="date" id="dateInput" name="date">
 
-    <label for="time">Select Time:</label>
-    <input type="time" id="timeInput" name="time">
+    <label for="startTimeInput">Select Start Time:</label>
+    <input type="time" id="startTimeInput" name="startTime">
 
-    <button type="submit">Check Availability</button>
-  </form>
+    <label for="endTimeInput">Select End Time:</label>
+    <input type="time" id="endTimeInput" name="endTime">
+
+    <button type="button" id="checkAvailabilityButton">Check Availability</button>
+</form>
 
   <div id="availableRooms">
     <!-- Available rooms will be displayed here -->

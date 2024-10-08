@@ -1,5 +1,8 @@
-const {DataTypes} = require('sequelize');
+const {DataTypes, Op} = require('sequelize');
+
 const {sequelize} = require('../config/db');
+const { Booking } = require('./booking');  
+
 
 const Room = sequelize.define(
     'Room',
@@ -17,9 +20,9 @@ const Room = sequelize.define(
             type: DataTypes.STRING(255),
             allowNull: false
         },
-        room_capacity: {
-            type: DataTypes.STRING(255),
-            allowNull: false
+        capacity: {
+            type: DataTypes.INTEGER,
+            allowNull: true
         }
     },
     {
@@ -28,7 +31,13 @@ const Room = sequelize.define(
     }
 );
 
-// Define a custom method on the Room model
+
+Room.hasMany(Booking, {
+    foreignKey: 'room_id',  // ensure this is the correct foreign key field in your Booking model
+    as: 'Bookings'  // This alias is important for your query to work
+});
+
+
 Room.findAvailableRooms = async function(date, startTime, endTime, courseId) {
     const queryDate = new Date(date);
     const startDateTime = new Date(date + ' ' + startTime);
@@ -36,9 +45,8 @@ Room.findAvailableRooms = async function(date, startTime, endTime, courseId) {
 
     return await Room.findAll({
         where: {
-            room_status: 'available',  // Assume you have a status field or similar
+            room_status: 'available',
             [Op.not]: [
-                // Exclude rooms that have bookings which overlap with the requested time
                 {
                     '$Bookings.start_time$': {[Op.lt]: endDateTime},
                     '$Bookings.end_time$': {[Op.gt]: startDateTime}
@@ -47,6 +55,7 @@ Room.findAvailableRooms = async function(date, startTime, endTime, courseId) {
         },
         include: [{
             model: Booking,
+            as: 'Bookings',  // Use the alias defined in the association
             required: false,
             attributes: [],
             where: {

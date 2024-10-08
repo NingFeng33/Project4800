@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
     loadPrograms();
-    document.getElementById('bookingForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        checkAvailability();
-    });
+    // document.getElementById('bookingForm').addEventListener('submit', function(event) {
+    //     event.preventDefault();
+    // });
 
     document.getElementById('programSelector').addEventListener('change', function() {
         const programId = this.value;
         loadCourses(programId);
+    });
+    document.getElementById('checkAvailabilityButton').addEventListener('click', function() {
+        checkAvailability();  
     });
 });
 
@@ -29,6 +31,7 @@ async function loadPrograms() {
 
 async function loadCourses(programId) {
     const courseSelector = document.getElementById('courseSelector');
+    //console.log('Loading courses for program:', programId);
     courseSelector.innerHTML = '<option value="">Select a Course</option>'; // Reset dropdown
     if (!programId) return;  // Exit if no programId is selected
 
@@ -50,23 +53,32 @@ async function checkAvailability() {
     const programId = document.getElementById('programSelector').value;
     const courseId = document.getElementById('courseSelector').value;
     const date = document.getElementById('dateInput').value;
-    const time = document.getElementById('timeInput').value;
+    const startTime = document.getElementById('startTimeInput').value;
+    const endTime = document.getElementById('endTimeInput').value;
+    console.log('Checking availability:', programId, courseId, date, startTime, endTime);
+    if (!programId || !courseId || !date || !startTime || !endTime) {
+        alert('Please fill all fields!');
+        return;
+    }
 
     try {
-        const response = await fetch('/booking/check-availability', {
+        const response = await fetch('/admin/booking/check-availability', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ programId, courseId, date, time })
+            body: JSON.stringify({ date, startTime, endTime, courseId })
         });
 
         const result = await response.json();
-        if(result.success) {
+        console.log('Availability result:', result);
+        if (result.success) {
             displayAvailableRooms(result.availableRooms);
         } else {
             console.error('Failed to fetch available rooms:', result.message);
+            alert('Failed to fetch available rooms');
         }
     } catch (error) {
         console.error('Error checking availability:', error);
+        alert('Error checking availability');
     }
 }
 

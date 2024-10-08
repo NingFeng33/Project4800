@@ -6,7 +6,7 @@ const { Booking } = require('../models/booking');
 //const sequelize = require("../config/db");
 const bcrypt = require("bcrypt");
 
-
+console.log(Room);
 // Login
 exports.getLogin = (_req, res) => {
   res.render("login", { message: "" });
@@ -120,15 +120,23 @@ exports.logout = (req, res) => {
 };
 
 exports.checkRoomAvailability = async (req, res) => {
-  const { date, time, courseId } = req.body;
+  const { date, startTime, endTime, courseId } = req.body;
+  console.log('Received data:', { date, startTime, endTime, courseId });
+
+  if (!date || !startTime || !endTime || !courseId) {
+      console.error('Missing one or more required fields.');
+      return res.status(400).json({ success: false, message: 'Missing one or more required fields.' });
+  }
+
   try {
-      const availableRooms = await Room.findAvailableRooms(date, time, courseId);
+      const availableRooms = await Room.findAvailableRooms(date, startTime, endTime, courseId);
       res.json({ success: true, availableRooms });
   } catch (error) {
       console.error('Error checking room availability:', error);
       res.status(500).send('Error checking room availability');
   }
 };
+
 
 exports.bookRoom = async (req, res) => {
   const { roomId, date, time, userId } = req.body;

@@ -13,6 +13,7 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 
 const sessionStore = new SequelizeStore({ db: sequelize });
 
@@ -31,6 +32,7 @@ sessionStore.sync();
 
 app.use(authRoutes);
 app.use(express.static('public'));
+
 
 const PORT = process.env.PORT || 9040;
 app.listen(PORT, () => {

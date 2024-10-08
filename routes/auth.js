@@ -41,9 +41,9 @@ router.get('/admin/booking', isAuthenticated,(req, res) => {
 
 // API to check room availability
 router.post('/admin/booking/check-availability', isAuthenticated,checkRoomAvailability);
-
+//router.post('/booking/check-availability', checkRoomAvailability);
 // API to book a room
-router.post('/admin/booking/book-room', isAuthenticated,bookRoom);
+router.post('/booking/book-room', isAuthenticated,bookRoom);
 
 
 // Fetch all programs - API route
@@ -70,4 +70,5 @@ router.get('/api/courses/:programId', async (req, res) => {
       res.status(500).json({ message: 'Failed to fetch courses' });
   }
 });
+
 module.exports = router;
