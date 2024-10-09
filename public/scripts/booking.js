@@ -53,10 +53,11 @@ async function checkAvailability() {
     const programId = document.getElementById('programSelector').value;
     const courseId = document.getElementById('courseSelector').value;
     const date = document.getElementById('dateInput').value;
+    const endDate = document.getElementById('endDateInput').value;
     const startTime = document.getElementById('startTimeInput').value;
     const endTime = document.getElementById('endTimeInput').value;
-    console.log('Checking availability:', programId, courseId, date, startTime, endTime);
-    if (!programId || !courseId || !date || !startTime || !endTime) {
+    console.log('Checking availability:', programId, courseId, date, endDate, startTime, endTime);
+    if (!programId || !courseId || !date|| !endDate || !startTime || !endTime) {
         alert('Please fill all fields!');
         return;
     }
@@ -65,7 +66,7 @@ async function checkAvailability() {
         const response = await fetch('/admin/booking/check-availability', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ date, startTime, endTime, courseId })
+            body: JSON.stringify({ date, endDate, startTime, endTime, courseId })
         });
 
         const result = await response.json();
@@ -122,6 +123,7 @@ function displayAvailableRooms(rooms) {
 function bookRoom() {
     const selectedRoomId = document.querySelector('input[name="selectedRoom"]:checked').value;
     const date = document.getElementById('dateInput').value;
+    const endDate = document.getElementById('endDateInput').value;
     const startTime = document.getElementById('startTimeInput').value;
     const endTime = document.getElementById('endTimeInput').value;
     const courseId = document.getElementById('courseSelector').value;
@@ -137,6 +139,7 @@ function bookRoom() {
         body: JSON.stringify({
             roomId: selectedRoomId,
             date: date,
+            endDate: endDate,
             startTime: startTime,
             endTime: endTime,
             courseId: courseId

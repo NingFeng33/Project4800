@@ -121,16 +121,16 @@ exports.logout = (req, res) => {
 };
 
 exports.checkRoomAvailability = async (req, res) => {
-  const { date, startTime, endTime, courseId } = req.body;
-  console.log('Received data:', { date, startTime, endTime, courseId });
+  const { date, endDate, startTime, endTime, courseId } = req.body;
+  console.log('Received data:', { date, endDate, startTime, endTime, courseId });
 
-  if (!date || !startTime || !endTime || !courseId) {
+  if (!date || !endDate || !startTime || !endTime || !courseId) {
       console.error('Missing one or more required fields.');
       return res.status(400).json({ success: false, message: 'Missing one or more required fields.' });
   }
 
   try {
-      const availableRooms = await Room.findAvailableRooms(date, startTime, endTime, courseId);
+      const availableRooms = await Room.findAvailableRooms(date, endDate, startTime, endTime, courseId);
       res.json({ success: true, availableRooms });
   } catch (error) {
       console.error('Error checking room availability:', error);
@@ -138,23 +138,12 @@ exports.checkRoomAvailability = async (req, res) => {
   }
 };
 
-
-// exports.bookRoom = async (req, res) => {
-//   const { roomId, date, time, userId } = req.body;
-//   try {
-//       const newBooking = await Booking.create({ roomId, date, time, userId });
-//       res.json({ success: true, message: 'Room booked successfully', bookingId: newBooking.id });
-//   } catch (error) {
-//       console.error('Error booking room:', error);
-//       res.status(500).send('Error booking room');
-//   }
-// };
 exports.bookRoom = async (req, res) => {
-  const { roomId, date, startTime, endTime, courseId } = req.body;
-  console.log('Received booking data:', { roomId, date, startTime, endTime, courseId });
+  const { roomId, date, endDate, startTime, endTime, courseId } = req.body;
+  console.log('Received booking data:', { roomId, date, endDate, startTime, endTime, courseId });
   // Convert date and time to proper datetime format
   const formattedStartTime = `${date} ${startTime}:00`;
-  const formattedEndTime = `${date} ${endTime}:00`;
+  const formattedEndTime = `${endDate} ${endTime}:00`;
 
   try {
       const newBooking = await Booking.create({
@@ -163,6 +152,7 @@ exports.bookRoom = async (req, res) => {
           start_time: formattedStartTime, // 'YYYY-MM-DD HH:MM:SS'
           end_time: formattedEndTime,     // 'YYYY-MM-DD HH:MM:SS'
           booking_date: date,
+          end_date: endDate,
           booking_status: 'booked'
       });
       res.json({ success: true, message: 'Room booked successfully', bookingId: newBooking.book_id });

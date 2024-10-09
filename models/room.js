@@ -38,9 +38,9 @@ Room.hasMany(Booking, {
 });
 
 
-Room.findAvailableRooms = async function(date, startTime, endTime, courseId) {
+Room.findAvailableRooms = async function(date, endDate, startTime, endTime, courseId) {
     const startDateTime = new Date(date + ' ' + startTime);
-    const endDateTime = new Date(date + ' ' + endTime);
+    const endDateTime = new Date(endDate + ' ' + endTime);
 
     return await Room.findAll({
         where: {
@@ -54,9 +54,9 @@ Room.findAvailableRooms = async function(date, startTime, endTime, courseId) {
             as: 'Bookings',
             required: false,
             where: {
-                [Op.and]: [
-                    { start_time: { [Op.lt]: endDateTime } },
-                    { end_time: { [Op.gt]: startDateTime } }
+                [Op.or]: [
+                    { start_time: { [Op.gte]: endDateTime } },  // Bookings start after the desired end time
+                    { end_time: { [Op.lte]: startDateTime } }   // Bookings end before the desired start time
                 ],
                 course_id: courseId
             },
