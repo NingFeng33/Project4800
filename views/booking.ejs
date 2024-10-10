@@ -4,7 +4,6 @@
   <title>Room Booking</title>
 </head>
 <body>
-  <h1>Room Booking for Courses</h1>
 <link rel="stylesheet" href="/css/booking.css"> <!-- Link to an external CSS for styling -->
 
 <div class="booking-container">
@@ -25,18 +24,19 @@
 
     </div>
     <div class="form-row">
-      <label for="dateInput">Select Date:</label>
+      <label for="dateInput">Select Start Date:</label>
       <input type="date" id="dateInput" name="date">
-    </div>
-    <div class="form-row">
       <label for="startTimeInput">Select Start Time:</label>
       <input type="time" id="startTimeInput" name="startTime">
     </div>
     <div class="form-row">
+      <label for="endDate">Select End Date:</label>
+      <input type="date" id="endDateInput" name="endDate">
       <label for="endTimeInput">Select End Time:</label>
       <input type="time" id="endTimeInput" name="endTime">
     </div>
     <button type="button" id="checkAvailabilityButton">Check Availability</button>
+    
   </form>
 
   <table id="availableRooms">

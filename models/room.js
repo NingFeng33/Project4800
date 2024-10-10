@@ -1,8 +1,7 @@
-const {DataTypes, Op} = require('sequelize');
 
+const {DataTypes, Op} = require('sequelize');
 const {sequelize} = require('../config/db');
 const { Booking } = require('./booking');  
-
 
 const Room = sequelize.define(
     'Room',
@@ -38,15 +37,52 @@ Room.hasMany(Booking, {
 });
 
 
-Room.findAvailableRooms = async function(date, startTime, endTime, courseId) {
-    const startDateTime = new Date(date + ' ' + startTime);
-    const endDateTime = new Date(date + ' ' + endTime);
+// Room.findAvailableRooms = async function(date, endDate, startTime, endTime, courseId) {
+//     // Create date strings directly
+//     const startDateTime = new Date(`${date}T${startTime}:00Z`); // 创建 UTC 时间
+//     const endDateTime = new Date(`${endDate}T${endTime}:00Z`);
+
+//     console.log("Checking availability from:", startDateTime, "to:", endDateTime);
+
+//     return await Room.findAll({
+//         where: {
+//             [Op.or]: [
+//                 { room_status: { [Op.ne]: 'unavailable' } },
+//                 { room_status: { [Op.is]: null } }
+//             ]
+//         },
+//         include: [{
+//             model: Booking,
+//             as: 'Bookings',
+//             required: false,
+//             where: {
+//                 [Op.not]: [ // 确保没有时间重叠
+//                     {
+//                         [Op.or]: [
+//                             { start_time: { [Op.lte]: endDateTime }, end_time: { [Op.gte]: startDateTime } }, // Covers cases where existing bookings envelop the new booking
+//                             { start_time: { [Op.between]: [startDateTime, endDateTime] } }, // Covers cases where existing bookings start within the new booking
+//                             { end_time: { [Op.between]: [startDateTime, endDateTime] } } // Covers cases where existing bookings end within the new booking
+//                         ]
+//                     }
+//                 ],
+//                 course_id: courseId
+//             },
+//             attributes: []
+//         }],
+//         logging: console.log
+//     });
+// }
+Room.findAvailableRooms = async function(date, endDate, startTime, endTime, courseId) {
+    const startDateTime = new Date(`${date}T${startTime}:00Z`).toISOString(); // Create UTC time
+    const endDateTime = new Date(`${endDate}T${endTime}:00Z`).toISOString();
+
+    console.log("Checking availability from:", startDateTime, "to:", endDateTime);
 
     return await Room.findAll({
         where: {
             [Op.or]: [
-                { room_status: { [Op.ne]: 'unavailable' } }, // Exclude rooms that are explicitly marked as 'unavailable'
-                { room_status: { [Op.is]: null } } // Include rooms where the status is NULL
+                { room_status: { [Op.ne]: 'unavailable' } },
+                { room_status: { [Op.is]: null } }
             ]
         },
         include: [{
@@ -54,16 +90,21 @@ Room.findAvailableRooms = async function(date, startTime, endTime, courseId) {
             as: 'Bookings',
             required: false,
             where: {
-                [Op.and]: [
-                    { start_time: { [Op.lt]: endDateTime } },
-                    { end_time: { [Op.gt]: startDateTime } }
-                ],
-                course_id: courseId
+                [Op.not]: {
+                    [Op.or]: [
+                        {
+                            [Op.and]: [
+                                { start_time: { [Op.lte]: endDateTime } },
+                                { end_time: { [Op.gte]: startDateTime } }
+                            ]
+                        }
+                    ]
+                },
+                //course_id: courseId
             },
             attributes: []
         }],
-        logging: console.log // This will log the SQL query to your console
+        logging: console.log
     });
 };
-
-module.exports = {Room};
+module.exports = { Room };

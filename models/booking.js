@@ -38,9 +38,13 @@ const Booking = sequelize.define(
             allowNull: true
         },
         booking_date: {
-            type: DataTypes.DATE,
-            allowNull: true
+            type: DataTypes.DATEONLY,
+            allowNull: false
         },
+        end_date: {
+            type: DataTypes.DATEONLY,
+            allowNull: false
+        }
     },
     {
         tableName: "Room_Booking",
