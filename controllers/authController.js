@@ -44,7 +44,7 @@ exports.postLogin = async (req, res) => {
     req.session.save(() => {
       switch(roleName) {
         case 'Admin':
-          res.redirect("/admin/dashboard");
+          res.redirect("/admin/booking");
           break;
         case 'Faculty':
           res.redirect("/faculty/dashboard");
