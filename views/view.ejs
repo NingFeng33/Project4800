@@ -61,25 +61,63 @@
             const courseFilter = document.getElementById('courseFilter');
             const applyFilterButton = document.getElementById('applyFilter');
             const calendarEl = document.getElementById('calendar');
-
-            // FullCalendar initialization
+    
+            // Initialize FullCalendar
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',  // Set initial view
+                initialView: 'dayGridMonth',
                 headerToolbar: {
-                    left: 'prev,next today',  // Previous/Next and Today buttons
-                    center: 'title',          // Title (current date)
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay' // View switch buttons
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                events: [] // Data will be added later based on the filters
+                events: [] // Events will be added later based on the filters
             });
             calendar.render();
-
-            // When the "Apply Filter" button is clicked, fetch and display filtered events on the calendar
+    
+            // Fetch courses based on the selected program
+            programFilter.addEventListener('change', function() {
+                const selectedProgram = programFilter.value;
+    
+                // Clear course filter options
+                courseFilter.innerHTML = '<option value="">Select Course</option>';
+    
+                if (selectedProgram) {
+                    // Fetch courses for the selected program from the server
+                    fetch(`/api/courses/${selectedProgram}`)
+                        .then(response => response.json())
+                        .then(courses => {
+                            // Populate course filter with courses
+                            courses.forEach(function(course) {
+                                const option = document.createElement('option');
+                                option.value = course.course_id; // Use course_id
+                                option.textContent = course.course_name; // Use course_name
+                                courseFilter.appendChild(option);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Failed to fetch courses:', error);
+                        });
+                }
+            });
+    
+            // Apply filter button click event
             applyFilterButton.addEventListener('click', function() {
                 const selectedProgram = programFilter.value;
                 const selectedCourse = courseFilter.value;
+    
+                // Clear existing events from the calendar
+                calendar.removeAllEvents(); 
+    
+                // Example: Fetch events based on selected filters (you'll need to implement this logic)
+                if (selectedProgram && selectedCourse) {
+                    // Here you would typically fetch the events from the server
+                    calendar.addEvent({ title: 'Example Event', start: '2024-10-20', end: '2024-10-22' }); // Example event
+                }
+    
+                calendar.render(); // Re-render the calendar
             });
         });
     </script>
+    
 </body>
 </html>

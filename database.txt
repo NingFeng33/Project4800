@@ -239,3 +239,6 @@ ALTER TABLE User ADD COLUMN phone_number VARCHAR(15);
 
 INSERT INTO Roles (role_name, role_description) VALUES ('Admin', 'Administrator with full access');
 INSERT INTO Roles (role_name, role_description) VALUES ('Faculty', 'Faculty access with limited permissions');
+
+ALTER TABLE Room_Booking
+ADD COLUMN end_date DATE;

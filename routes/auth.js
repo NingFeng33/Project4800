@@ -1,3 +1,5 @@
+const {DataTypes, Op} = require('sequelize');
+const { sequelize } = require('../config/db');
 const express = require("express");
 const { isAuthenticated } = require("../middleware/authMiddleware");
 const {
@@ -69,5 +71,24 @@ router.get('/api/courses/:programId', async (req, res) => {
       res.status(500).json({ message: 'Failed to fetch courses' });
   }
 });
+
+router.get('/view', async (req, res) => {
+  try {
+      await sequelize.authenticate();
+      console.log('Database connected successfully!');
+
+      const programs = await Program.findAll();
+      const courses = await Course.findAll();
+
+      console.log('Programs:', programs);
+      console.log('Courses:', courses);
+
+      res.render('view', { programs, courses });
+  } catch (error) {
+      console.error('Error fetching data from database:', error);
+      res.status(500).send('Error fetching data from database');
+  }
+});
+
 
 module.exports = router;

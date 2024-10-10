@@ -30,9 +30,10 @@ app.use(express.json());
 app.use(express.static('public')); // Serve static files from the public directory
 app.use('/api', dataRoutes);
 
-// Set the view engine to ejs
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+
+
 
 // Serve the index page with ejs
 app.get('/', (req, res) => {
