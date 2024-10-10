@@ -4,6 +4,7 @@ const { Role } = require("../models/role");
 const { Room } = require('../models/room');
 const { Booking } = require('../models/booking');
 const { Course } = require('../models/course');
+const { sequelize } = require('../config/db');
 //const sequelize = require("../config/db");
 const bcrypt = require("bcrypt");
 
@@ -144,19 +145,40 @@ exports.bookRoom = async (req, res) => {
   // Convert date and time to proper datetime format
   const formattedStartTime = `${date} ${startTime}:00`;
   const formattedEndTime = `${endDate} ${endTime}:00`;
+  console.log('Formatted date and time:', formattedStartTime, formattedEndTime);
+  // try {
+  //     const newBooking = await Booking.create({
+  //         room_id: roomId,
+  //         course_id: courseId,
+  //         start_time: formattedStartTime, // 'YYYY-MM-DD HH:MM:SS'
+  //         end_time: formattedEndTime,     // 'YYYY-MM-DD HH:MM:SS'
+  //         booking_date: date,
+  //         end_date: endDate,
+  //         booking_status: 'booked'
+  //     });
+  //     res.json({ success: true, message: 'Room booked successfully', bookingId: newBooking.book_id });
+  // } 
+  const insertQuery = `
+  INSERT INTO Room_Booking
+  (room_id, course_id, start_time, end_time, booking_date, end_date, booking_status)
+  VALUES (?, ?, ?, ?, ?, ?, ?);
+`;
 
-  try {
-      const newBooking = await Booking.create({
-          room_id: roomId,
-          course_id: courseId,
-          start_time: formattedStartTime, // 'YYYY-MM-DD HH:MM:SS'
-          end_time: formattedEndTime,     // 'YYYY-MM-DD HH:MM:SS'
-          booking_date: date,
-          end_date: endDate,
-          booking_status: 'booked'
-      });
-      res.json({ success: true, message: 'Room booked successfully', bookingId: newBooking.book_id });
-  } catch (error) {
+try {
+  await sequelize.query(insertQuery, {
+    replacements: [
+      roomId,
+      courseId,
+      formattedStartTime, // Already formatted as 'YYYY-MM-DD HH:MM:SS'
+      formattedEndTime,   // Already formatted as 'YYYY-MM-DD HH:MM:SS'
+      date,
+      endDate,
+      'booked'
+    ],
+    type: sequelize.QueryTypes.INSERT
+  });
+  res.json({ success: true, message: 'Room booked successfully' });
+} catch (error) {
       console.error('Error booking room:', error);
       res.status(500).send('Error booking room');
   }

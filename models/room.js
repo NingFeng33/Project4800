@@ -1,8 +1,6 @@
 const {DataTypes, Op} = require('sequelize');
-
 const {sequelize} = require('../config/db');
 const { Booking } = require('./booking');  
-
 
 const Room = sequelize.define(
     'Room',
@@ -38,15 +36,20 @@ Room.hasMany(Booking, {
 });
 
 
+
+
 Room.findAvailableRooms = async function(date, endDate, startTime, endTime, courseId) {
-    const startDateTime = new Date(date + ' ' + startTime);
-    const endDateTime = new Date(endDate + ' ' + endTime);
+    // Create date strings directly
+    const startDateTime = `${date} ${startTime}:00`;
+    const endDateTime = `${endDate} ${endTime}:00`;
+
+    console.log("Checking availability from:", startDateTime, "to:", endDateTime);
 
     return await Room.findAll({
         where: {
             [Op.or]: [
-                { room_status: { [Op.ne]: 'unavailable' } }, // Exclude rooms that are explicitly marked as 'unavailable'
-                { room_status: { [Op.is]: null } } // Include rooms where the status is NULL
+                { room_status: { [Op.ne]: 'unavailable' } },
+                { room_status: { [Op.is]: null } }
             ]
         },
         include: [{
@@ -54,16 +57,16 @@ Room.findAvailableRooms = async function(date, endDate, startTime, endTime, cour
             as: 'Bookings',
             required: false,
             where: {
-                [Op.or]: [
-                    { start_time: { [Op.gte]: endDateTime } },  // Bookings start after the desired end time
-                    { end_time: { [Op.lte]: startDateTime } }   // Bookings end before the desired start time
+                [Op.and]: [
+                    { start_time: { [Op.lt]: endDateTime } },
+                    { end_time: { [Op.gt]: startDateTime } }
                 ],
                 course_id: courseId
             },
             attributes: []
         }],
-        logging: console.log // This will log the SQL query to your console
+        logging: console.log
     });
 };
 
-module.exports = {Room};
+module.exports = { Room };
