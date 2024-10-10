@@ -1,3 +1,4 @@
+const { zonedTimeToUtc } = require('date-fns-tz');
 const {DataTypes, Op} = require('sequelize');
 const {sequelize} = require('../config/db');
 const { Booking } = require('./booking');  
@@ -38,10 +39,42 @@ Room.hasMany(Booking, {
 
 
 
+// Room.findAvailableRooms = async function(date, endDate, startTime, endTime, courseId) {
+//     // Create date strings directly
+//     const startDateTime = `${date} ${startTime}:00`;
+//     const endDateTime = `${endDate} ${endTime}:00`;
+
+//     console.log("Checking availability from:", startDateTime, "to:", endDateTime);
+
+//     return await Room.findAll({
+//         where: {
+//             [Op.or]: [
+//                 { room_status: { [Op.ne]: 'unavailable' } },
+//                 { room_status: { [Op.is]: null } }
+//             ]
+//         },
+//         include: [{
+//             model: Booking,
+//             as: 'Bookings',
+//             required: false,
+//             where: {
+//                 [Op.and]: [
+//                     { start_time: { [Op.lt]: endDateTime } },
+//                     { end_time: { [Op.gt]: startDateTime } }
+//                 ],
+//                 course_id: courseId
+//             },
+//             attributes: []
+//         }],
+//         logging: console.log
+//     });
+// };
 Room.findAvailableRooms = async function(date, endDate, startTime, endTime, courseId) {
-    // Create date strings directly
-    const startDateTime = `${date} ${startTime}:00`;
-    const endDateTime = `${endDate} ${endTime}:00`;
+    const timeZone = 'America/Vancouver'; // 你的本地时区
+
+    // 将本地时间转换为 UTC
+    const startDateTime = zonedTimeToUtc(`${date}T${startTime}:00`, timeZone);
+    const endDateTime = zonedTimeToUtc(`${endDate}T${endTime}:00`, timeZone);
 
     console.log("Checking availability from:", startDateTime, "to:", endDateTime);
 
