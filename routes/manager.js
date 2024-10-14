@@ -8,13 +8,12 @@ const { Booking } = require('../models/booking');
 // GET: manager page showing courses and rooms
 router.get('/manager', async (req, res) => {
     try {
-      const courses = await Course.findAll();
+        const courses = await Course.findAll({
+            include: [Program],
+          });
       const rooms = await Room.findAll();
-      const bookings = await Booking.findAll({
-        include: [Course, Room],
-      });
   
-      res.render('manager', { courses, rooms, bookings });
+      res.render('manager', { courses, rooms });
     } catch (error) {
       console.error('Failed to fetch data:', error);
       res.status(500).send('Error fetching data');

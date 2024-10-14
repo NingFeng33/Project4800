@@ -19,4 +19,7 @@ const Program = sequelize.define(
         timestamps: false
     }
 );
+
+Program.hasMany(require('./course').Course, { foreignKey: 'program_id' });
+
 module.exports = { Program };

@@ -58,9 +58,9 @@
       <tbody>
         <% courses.forEach(course => { %>
           <tr>
-            <td><%= course.courseCode %></td>
-            <td><%= course.courseName %></td>
-            <td><%= course.program %></td>
+            <td><%= course.course_code %></td>
+            <td><%= course.course_name %></td>
+            <td><%= course.Program ? course.Program.program_name : 'N/A' %></td>
             <td>
               <form action="/courses/<%= course.id %>?_method=DELETE" method="POST">
                 <button type="submit">Delete</button>
