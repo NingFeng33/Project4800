@@ -1,5 +1,5 @@
 
-const {DataTypes, Op} = require('sequelize');
+const {DataTypes, Op, Sequelize} = require('sequelize');
 const {sequelize} = require('../config/db');
 const { Booking } = require('./booking');  
 
@@ -72,39 +72,64 @@ Room.hasMany(Booking, {
 //         logging: console.log
 //     });
 // }
+// Room.findAvailableRooms = async function(date, endDate, startTime, endTime, courseId) {
+//     const startDateTime = new Date(`${date}T${startTime}:00Z`).toISOString(); // Create UTC time
+//     const endDateTime = new Date(`${endDate}T${endTime}:00Z`).toISOString();
+
+//     console.log("Checking availability from:", startDateTime, "to:", endDateTime);
+
+//     return await Room.findAll({
+//         where: {
+//             [Op.or]: [
+//                 { room_status: { [Op.ne]: 'unavailable' } },
+//                 { room_status: { [Op.is]: null } }
+//             ]
+//         },
+//         include: [{
+//             model: Booking,
+//             as: 'Bookings',
+//             required: false,
+//             where: {
+//                 [Op.not]: {
+//                     [Op.or]: [
+//                         {
+//                             [Op.and]: [
+//                                 { start_time: { [Op.lte]: endDateTime } },
+//                                 { end_time: { [Op.gte]: startDateTime } }
+//                             ]
+//                         }
+//                     ]
+//                 },
+//                 //course_id: courseId
+//             },
+//             attributes: []
+//         }],
+//         logging: console.log
+//     });
+// };
 Room.findAvailableRooms = async function(date, endDate, startTime, endTime, courseId) {
-    const startDateTime = new Date(`${date}T${startTime}:00Z`).toISOString(); // Create UTC time
-    const endDateTime = new Date(`${endDate}T${endTime}:00Z`).toISOString();
+    // Format the start and end times to be used in the raw SQL query
+    const startDateTime = `${date} ${startTime}:00`;
+    const endDateTime = `${endDate} ${endTime}:00`;
 
     console.log("Checking availability from:", startDateTime, "to:", endDateTime);
 
-    return await Room.findAll({
-        where: {
-            [Op.or]: [
-                { room_status: { [Op.ne]: 'unavailable' } },
-                { room_status: { [Op.is]: null } }
-            ]
-        },
-        include: [{
-            model: Booking,
-            as: 'Bookings',
-            required: false,
-            where: {
-                [Op.not]: {
-                    [Op.or]: [
-                        {
-                            [Op.and]: [
-                                { start_time: { [Op.lte]: endDateTime } },
-                                { end_time: { [Op.gte]: startDateTime } }
-                            ]
-                        }
-                    ]
-                },
-                //course_id: courseId
-            },
-            attributes: []
-        }],
-        logging: console.log
-    });
+    // Use sequelize.query to execute a raw SQL query
+    const results = await sequelize.query(`
+        SELECT Room.room_id, Room.room_status, Room.room_number, Room.capacity
+        FROM Room
+        LEFT JOIN Room_Booking AS Bookings
+            ON Room.room_id = Bookings.room_id
+            AND (
+                Bookings.start_time < '${endDateTime}'
+                AND Bookings.end_time > '${startDateTime}'
+            )
+        WHERE (Room.room_status != 'unavailable' OR Room.room_status IS NULL)
+            AND Bookings.room_id IS NULL
+        GROUP BY Room.room_id
+        HAVING COUNT(Bookings.room_id) = 0
+    `, { type: sequelize.QueryTypes.SELECT });
+
+    return results;
 };
 module.exports = { Room };
