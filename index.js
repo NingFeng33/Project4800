@@ -1,30 +1,59 @@
+
 require('dotenv').config();
-const dataRoutes = require('./routes/dataRoutes');
-const login = require('./routes/auth')
 const express = require('express');
-const app = express();
-const methodOverride = require('method-override');
-const { initializeDatabase } = require('./config/db');
 const path = require('path');
+const app = express();
+const initializeDatabase = require('./config/db');
+const dataRoutes = require('./routes/dataRoutes');
 const Sequelize = require('sequelize');
+const sequelize = new Sequelize(process.env.DB_CONNECTION_STRING); // Adjust with your DB credentials
 
-app.set('view engine', 'ejs');
+const models = {
+  Role: require('./role')(sequelize, Sequelize.DataTypes),
+  User: require('./user')(sequelize, Sequelize.DataTypes),
+  // add other models here
+};
 
-// Middleware
-app.use(express.urlencoded({ extended: true }));
+// Initialize associations
+Object.keys(models).forEach(key => {
+  if ('associate' in models[key]) {
+    models[key].associate(models);
+  }
+});
+
+models.sequelize = sequelize;
+models.Sequelize = Sequelize;
+
+module.exports = models;
+// Middleware to parse JSON and serve static files
 app.use(express.json());
-//app.use(methodOverride('_method'));
-app.use('/', dataRoutes);
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public')); // Serve static files from the public directory
+app.use('/api', dataRoutes);
 
-initializeDatabase()
-  .then(() => {
-    console.log('Connected to the database.');
-    app.listen(3000, () => {
-      console.log('Server is running on http://localhost:3000');
-    });
-  })
-  .catch(err => {
-    console.error('Failed to connect to the database:', err);
-  });
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 
+
+
+// Serve the index page with ejs
+app.get('/', (req, res) => {
+    res.render('index', { title: 'Welcome to Project4800' }); // You can pass additional data as needed
+});
+
+app.get('/booking', (req, res) => {
+    res.render('booking');
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+(async () => {
+    try {
+        const db = await initializeDatabase();
+        console.log('Database connected successfully!');
+        app.listen(PORT, () => {
+            console.log(`Server running on http://localhost:${PORT}`);
+        });
+    } catch (error) {
+        console.error('Failed to connect to the database:', error);
+    }
+})();

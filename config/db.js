@@ -1,35 +1,18 @@
-const { Sequelize } = require('sequelize');
+require('dotenv').config();
+process.env.TZ = 'America/Vancouver';
+console.log("Current timezone set in Node.js:", process.env.TZ);
+console.log("Current time according to Node.js:", new Date().toString());
+console.log("UTC time according to Node.js:", new Date().toUTCString());
+const { Sequelize } = require("sequelize");
 
-// Create a Sequelize instance using environment variables
-const sequelize = new Sequelize(
-  process.env.DB_NAME,         // Database name
-  process.env.DB_USER,         // MySQL username
-  process.env.DB_PASSWORD,     // MySQL password
-  {
-    host: process.env.DB_HOST,   // MySQL host
-    dialect: 'mysql',            // MySQL
-    port: process.env.DB_PORT,   // MySQL port
-  }
-);
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+  host: process.env.DB_HOST,
+  dialect: "mysql",
+  dialectOptions: {
+    charset: "utf8mb4",
+    timezone: 'local',
+  },
+  logging: false,
+});
 
-sequelize.sync({ alter: true })  
-  .then(() => {
-    console.log('Database & tables created!');
-  })
-  .catch(err => {
-    console.error('Error syncing database:', err);
-  });
-
-
-// Function to initialize database connection
-const initializeDatabase = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-  } catch (error) {
-    console.error('Unable to connect to the database:', error);
-    throw error;
-  }
-};
-
-module.exports = { sequelize, initializeDatabase };
+module.exports = { sequelize };
