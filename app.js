@@ -1,19 +1,26 @@
+process.env.TZ = 'America/Vancouver'
 require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
-const { sequelize } = require("./config/db");
+
+const { sequelize, User, Role} = require("./models");
 const authRoutes = require("./routes/auth");
 const app = express();
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
+
+
+
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 
 const sessionStore = new SequelizeStore({ db: sequelize });
+
 
 app.use(
   session({
@@ -28,6 +35,8 @@ app.use(
 sessionStore.sync();
 
 app.use(authRoutes);
+app.use(express.static('public'));
+
 
 const PORT = process.env.PORT || 9040;
 app.listen(PORT, () => {

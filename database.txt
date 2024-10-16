@@ -50,8 +50,7 @@ CREATE TABLE User (
     F_Name VARCHAR(255),
     L_Name VARCHAR(255),
     role_id INT,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL  -- fixed
+    password VARCHAR(255),  -- Consider changing VARCHAR size based on the hash used
     FOREIGN KEY (role_id) REFERENCES Roles(role_id)
 );
 
@@ -97,3 +96,149 @@ CREATE TABLE Room_Booking (
 -----------------------------------------------------------------
 If need modify this database except adding data into this database for own
 testing, please update this file and infom the  whole teammates 
+
+--Insert room info:
+INSERT INTO Room (room_number, capacity) VALUES
+('152', 34),
+('153', 34),
+('211', 20),
+('212', 24),
+('220', 20),
+('221', 20),
+('223/224', 40),
+('226', 20),
+('252', 20),
+('266', 34),
+('267', 34),
+('272', 34),
+('281', 20),
+('283', 36),
+('284', 20),
+('312', 20),
+('321', 20),
+('322', 20),
+('324', 20),
+('325', 20),
+('327', 20),
+('330', 34),
+('331', 34),
+('343', 68),
+-- Shop
+('154', 34),
+('145', 34),
+('141', 17),
+('130H', 17),
+('130J', 17),
+('130c/b', 34),
+('130', 34),
+('230', 34),
+('231', 34),
+('233', 17),
+('234', 17),
+('241', 34),
+('253', 17),
+('254', 34),
+('261', 17),
+('263', 17),
+-- Special
+('198', 20),
+('196', 20),
+('262', 6),
+('271', 28),
+('282', 1),
+('311', 10),
+('342', 24);
+
+-- Insert Program info
+INSERT INTO Program (program_name) VALUES
+('GT'),
+('AME-E'),
+('AME-M');
+
+-- Inserting courses for GT Program
+INSERT INTO Courses (course_code, course_name, program_id) VALUES
+('AVGT 1001', 'Standards', 1),
+('AVGT 1006', 'Turbine Theory', 1),
+('AVGT 2002', 'Repair & Overhaul 1', 1),
+('AVGT 2004', 'Repair & Overhaul 2', 1),
+('AVGT 3001', 'Certification', 1);
+
+-- Inserting courses for AME-E Program
+INSERT INTO Courses (course_code, course_name, program_id) VALUES
+('AVAV 1105', 'Standard Practices', 2),
+('AVAV 1106', 'Structures', 2),
+('AVAV 1107', 'DC Theory', 2),
+('AVAV 1108', 'AC Theory', 2),
+('AVAV 2105', 'Analog Theory', 2),
+('AVAV 2106', 'Digital Theory', 2),
+('AVAV 2107', 'Propulsion', 2),
+('AVAV 2108', 'Systems', 2),
+('AVAV 2109', 'Power Distribution', 2),
+('AVAV 3105', 'Instruments', 2),
+('AVAV 3106', 'Radio Theory', 2),
+('AVAV 3107', 'Communication Systems', 2),
+('AVAV 3108', 'Navigation Systems 1', 2),
+('AVAV 4105', 'Navigation Systems Sys 2', 2),
+('AVAV 4106', 'Flight-line Maintenance', 2),
+('AVAV 4107', 'Autopilot', 2),
+('AVAV 4108', 'Installations', 2);
+
+-- Inserting courses for AME-M Program
+INSERT INTO Courses (course_code, course_name, program_id) VALUES
+('AVCC 1100', 'Safety', 3),
+('AVCC 1105', 'Hand Tools', 3),
+('AVCC 1110', 'Drawings', 3),
+('AVCC 1115', 'S/M', 3),
+('AVCC 1120', 'Electrical Basics', 3),
+('AVCC 1125', 'Electrical Standards', 3),
+('AVCC 2200', 'Electrical Power & Distribution', 3),
+('AVCC 2205', 'Systems', 3),
+('AVCC 2210', 'Instruments & CARS', 3),
+('AVAM 2215', 'Avionics', 3),
+('AVAM 3400', 'Hydraulics', 3),
+('AVAM 3405', 'Landing Gear', 3),
+('AVAM 3305', 'PP Intro', 3),
+('AVAM 3310', 'Piston Engines', 3),
+('AVAM 3315', 'Piston Systems', 3),
+('AVAM 3320', 'Propellors', 3),
+('AVAM 3325', 'Turbines', 3),
+('AVAM 2225', 'Rigging', 3),
+('AVAM 3410', 'Rotary', 3),
+('AVAM 3415', 'Composites', 3),
+('AVAM 4450', 'AMO', 3);
+
+ALTER TABLE Room
+ADD COLUMN category VARCHAR(100);
+
+-- Update categories for "Class" rooms
+UPDATE Room
+SET category = 'Class'
+WHERE room_number IN (
+    '152', '153', '211', '212', '220', '221', '223/224', '226', '252',
+    '266', '267', '272', '281', '283', '284', '312', '321', '322', '324',
+    '325', '327', '330', '331', '343'
+);
+
+-- Update categories for "Shop" rooms
+UPDATE Room
+SET category = 'Shop'
+WHERE room_number IN (
+    '154', '145', '141', '130H', '130J', '130c/b', '130', '230', '231', '233',
+    '234', '241', '253', '254', '261', '263'
+);
+
+-- Update categories for "Special" rooms
+UPDATE Room
+SET category = 'Special'
+WHERE room_number IN (
+    '198', '196', '262', '271', '282', '311', '342'
+);
+
+ALTER TABLE User ADD COLUMN email VARCHAR(100) NOT NULL UNIQUE;
+ALTER TABLE User ADD COLUMN phone_number VARCHAR(15);
+
+INSERT INTO Roles (role_name, role_description) VALUES ('Admin', 'Administrator with full access');
+INSERT INTO Roles (role_name, role_description) VALUES ('Faculty', 'Faculty access with limited permissions');
+
+ALTER TABLE Room_Booking
+ADD COLUMN end_date DATE;
