@@ -33,11 +33,7 @@
   },
   "homepage": "https://github.com/NingFeng33/Project4800#readme",
   "devDependencies": {
-    "@babel/core": "^7.25.7",
-    "@babel/preset-env": "^7.25.7",
-    "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
-    "mocha": "^10.7.3",
     "supertest": "^7.0.0"
   }
 }
