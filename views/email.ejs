@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Reset Your Password</title>
+  </head>
+  <body>
+    <h2>Reset Your Password</h2>
+    <% if (message) { %>
+    <p style="color: red"><%= message %></p>
+    <% } %>
+    <form action="/email" method="POST">
+      <div>
+        <label>Email:</label>
+        <input type="email" name="email" required />
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  </body>
+</html>
