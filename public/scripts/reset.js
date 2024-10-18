@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function () {
   const confirmNewPassBtn = document.getElementById("new-password-button");
 
