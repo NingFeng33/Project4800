@@ -34,6 +34,15 @@ const User = sequelize.define(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    // New fields for password reset token and expiration
+    // resetToken: {
+    //   type: DataTypes.STRING,
+    //   allowNull: true,
+    // },
+    // resetTokenExp: {
+    //   type: DataTypes.DATE,
+    //   allowNull: true,
+    // },
   },
   {
     tableName: "User",
