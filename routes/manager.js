@@ -12,8 +12,9 @@ router.get('/manager', async (req, res) => {
             include: [Program],
           });
       const rooms = await Room.findAll();
+      const programs = await Program.findAll();
   
-      res.render('manager', { courses, rooms });
+      res.render('manager', { courses, rooms, programs });
     } catch (error) {
       console.error('Failed to fetch data:', error);
       res.status(500).send('Error fetching data');
@@ -52,17 +53,16 @@ router.post('/courses', async (req, res) => {
     }
 });
 
-// DELETE: Remove a course
-router.delete('/courses/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-      await Course.destroy({ where: { id } });
-      res.redirect('/');
-    } catch (error) {
-      console.error('Failed to delete course:', error);
-      res.status(500).json({ error: 'Failed to delete course' });
-    }
-  });
+// Delete course by ID
+// router.delete('/courses/:id', async (req, res) => {
+//   try {
+//       await Course.destroy({ where: { course_id: req.params.id } });
+//       res.redirect('/manager');
+//   } catch (error) {
+//       console.error('Error deleting course:', error);
+//       res.status(500).send('Error deleting course');
+//   }
+// });
   
 // POST: Add a new room
 router.post('/rooms', async (req, res) => {
@@ -80,16 +80,47 @@ router.post('/rooms', async (req, res) => {
     }
 });
   
-// DELETE: Remove a room
-router.delete('/rooms/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-      await Room.destroy({ where: { id } });
-      res.redirect('/');
-    } catch (error) {
-      console.error('Failed to delete room:', error);
-      res.status(500).json({ error: 'Failed to delete room' });
-    }
+// Delete room by ID
+// router.delete('/rooms/:id', async (req, res) => {
+//   try {
+//       await Room.destroy({ where: { room_id: req.params.id } }); 
+//       res.redirect('/manager');
+//   } catch (error) {
+//       console.error('Error deleting room:', error);
+//       res.status(500).send('Error deleting room');
+//   }
+// });
+
+// Fetch paginated courses
+router.get('/courses', async (req, res) => {
+  const { page = 1, limit = 5 } = req.query; // Default to page 1, limit 5
+  try {
+      const { count, rows: courses } = await Course.findAndCountAll({
+          include: 'Program',
+          limit: parseInt(limit), // Convert to number
+          offset: (page - 1) * limit, // Calculate offset
+      });
+      res.json({ courses, totalPages: Math.ceil(count / limit), currentPage: parseInt(page) });
+  } catch (error) {
+      console.error('Error fetching courses:', error);
+      res.status(500).send('Error fetching courses');
+  }
 });
+
+// Fetch paginated rooms
+router.get('/rooms', async (req, res) => {
+  const { page = 1, limit = 5 } = req.query;
+  try {
+      const { count, rows: rooms } = await Room.findAndCountAll({
+          limit: parseInt(limit),
+          offset: (page - 1) * limit,
+      });
+      res.json({ rooms, totalPages: Math.ceil(count / limit), currentPage: parseInt(page) });
+  } catch (error) {
+      console.error('Error fetching rooms:', error);
+      res.status(500).send('Error fetching rooms');
+  }
+});
+
 
 module.exports = router;

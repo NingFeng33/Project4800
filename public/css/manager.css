@@ -1,11 +1,13 @@
 /* Global Styles */
 body {
+  
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
     color: #333;
   }
+  
   
   .container {
     width: 90%;
@@ -80,6 +82,38 @@ body {
   table tr:hover {
     background-color: #f1f1f1;
   }
+
+  .pagination {
+    display: flex;
+    justify-content: center; /* Centers the buttons */
+    align-items: center;
+    margin-top: 15px;
+}
+
+
+.pagination button {
+    margin: 0 10px; /* Adds space between buttons and page info */
+    padding: 5px 15px; /* Gives the buttons padding */
+    border: none;
+    background-color: #007bff; /* Blue background */
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pagination button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.pagination span {
+    font-size: 16px;
+    color: #333;
+}
+
+.pagination button:disabled {
+    background-color: #ccc; /* Gray background for disabled buttons */
+    cursor: not-allowed; /* Not clickable */
+}
   
   /* Form Section Styling */
   .form-section {
