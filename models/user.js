@@ -1,52 +1,43 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/db");
 
+
 const User = sequelize.define(
   "User",
   {
     user_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
+      autoIncrement: true
     },
     F_Name: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: false
     },
     L_Name: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: false
     },
     role_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "Roles",
-        key: "role_id",
-      },
+        model: 'Roles', 
+        key: 'role_id', 
+      }
     },
     email: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      unique: true,
+      unique: true
     },
     password: {
       type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    // New fields for password reset token and expiration
-    // resetToken: {
-    //   type: DataTypes.STRING,
-    //   allowNull: true,
-    // },
-    // resetTokenExp: {
-    //   type: DataTypes.DATE,
-    //   allowNull: true,
-    // },
-  },
-  {
-    tableName: "User",
-    timestamps: false,
+      allowNull: false
+    }
+  }, {
+    tableName: 'User',
+    timestamps: false
   }
 );
 
