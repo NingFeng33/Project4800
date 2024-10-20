@@ -1,13 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-  </head>
-  <body>
-    <% if (message) { %>
-    <p style="color: red"><%= message %></p>
-    <% } %>
-  </body>
+    <link rel="stylesheet" href="/css/dashboard.css"> 
+</head>
+<body>
+    <!-- Top Bar -->
+    <%- include('partials/top_bar') %>
+
+    <!-- Sidebar and Main Content Wrapper -->
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <%- include('partials/side_bar') %>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <section class="content-header">
+                <h2>Dashboard Overview</h2>
+            </section>
+
+            <section class="content-body">
+                <!-- Example Sections: Schedule Overview, Notifications, Room Availability -->
+                <div class="card">
+                    <h3>Today's Schedule</h3>
+                    <ul>
+                        <li>Course A: 10:00 AM - Room 101</li>
+                        <li>Course B: 12:00 PM - Room 202</li>
+                        <li>Course C: 2:00 PM - Room 303</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Room Availability</h3>
+                    <ul>
+                        <li>Room 101: Available</li>
+                        <li>Room 202: Booked</li>
+                        <li>Room 303: Available</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Notifications</h3>
+                    <ul>
+                        <li>Room 202 has a conflict at 2:00 PM.</li>
+                        <li>New schedule added for Course D.</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/scripts/dashboard.js"></script>
+</body>
 </html>

@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { fetchData } = require('../controllers/dataController');
 
+
 router.get('/', async (req, res) => {
     try {
         const data = await fetchData();

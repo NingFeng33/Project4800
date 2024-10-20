@@ -1,3 +1,4 @@
+require('dotenv').config();
 process.env.TZ = 'America/Vancouver';
 console.log("Current timezone set in Node.js:", process.env.TZ);
 console.log("Current time according to Node.js:", new Date().toString());

@@ -1,0 +1,123 @@
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Top Bar Styles */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #007bff;
+    padding: 15px 20px;
+    color: white;
+    position: fixed;
+    width: 100%;  /* Stretches across the top */
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Keeps it above everything else */
+}
+
+.top-bar .logo {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Search Bar Styles */
+.search-bar {
+    display: flex;
+    align-items: center;
+}
+
+#search-input {
+    padding: 8px;
+    border-radius: 5px 0 0 5px;
+    border: none;
+    width: 200px;
+    outline: none;
+}
+
+#search-button {
+    padding: 8px 12px;
+    background-color: white;
+    color: #007bff;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+#search-button:hover {
+    background-color: #f4f4f4;
+}
+
+/* Profile and Logout */
+.top-bar .user-profile {
+    display: flex;
+    align-items: center;
+}
+
+.top-bar .user-profile span {
+    margin-right: 10px;
+}
+
+.top-bar .user-profile a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.user-profile a.logout-btn {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    background-color: #ff4d4d;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+.user-profile a.logout-btn:hover {
+    background-color: #ff1a1a;
+}
+
+/* Main Content Area */
+.main-content {
+    padding: 20px;
+    margin-top: 60px; /* Leave space for the top bar */
+    transition: margin-left 0.3s ease; /* Smooth transition for sidebar toggle */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .side_bar {
+        width: 100%; /* Full width for smaller screens */
+        height: auto;
+        position: relative;
+        top: 0;
+    }
+
+    .main-content {
+        margin-left: 0; /* No sidebar margin on mobile */
+    }
+
+    .top-bar {
+        flex-direction: column; /* Stack logo, search, and profile vertically */
+        align-items: flex-start;
+    }
+
+    .search-bar {
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    #search-input {
+        width: 100%; /* Full width on mobile */
+    }
+
+    .user-profile {
+        margin-top: 10px;
+        align-self: flex-end;
+    }
+}

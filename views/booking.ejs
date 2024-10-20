@@ -5,7 +5,12 @@
 </head>
 <body>
 <link rel="stylesheet" href="/css/booking.css"> <!-- Link to an external CSS for styling -->
+<!-- Top Bar -->
+<%- include('partials/top_bar') %>
+<!-- Sidebar -->
+<%- include('partials/side_bar') %>
 
+<main class="main-content">
 <div class="booking-container">
   <h1>Room Booking for Courses</h1>
   <form id="bookingForm">
@@ -52,6 +57,7 @@
     </tbody>
   </table>
 </div>
+</main>
 
 <script src="/scripts/booking.js"></script>
 </body>

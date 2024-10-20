@@ -26,6 +26,12 @@
 </head>
 
 <body>
+    <!-- Top Bar -->
+    <%- include('partials/top_bar') %>
+    <!-- Sidebar -->
+    <%- include('partials/side_bar') %>
+
+    <main class="main-content">
     <div class="container">
         <!-- Sidebar for filters -->
         <div class="sidebar">
@@ -51,6 +57,7 @@
         <!-- Calendar container -->
         <div id='calendar'></div>
     </div>
+    </main>
 
     <!-- FullCalendar JS -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js'></script>

@@ -44,7 +44,6 @@ app.get('/booking', (req, res) => {
     res.render('booking');
 });
 
-
 // Start the server
 const PORT = process.env.PORT || 3000;
 (async () => {
