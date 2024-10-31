@@ -32,31 +32,31 @@
     <%- include('partials/side_bar') %>
 
     <main class="main-content">
-    <div class="container">
-        <!-- Sidebar for filters -->
-        <div class="sidebar">
-            <h3>Filter by Program</h3>
-            <select id="programFilter">
-                <option value="">Select Program</option>
-                <% programs.forEach(function(program) { %>
-                    <option value="<%= program.program_id %>"><%= program.program_name %></option>
-                <% }) %>
-            </select>
+        <div class="container">
+            <!-- Sidebar for filters -->
+            <div class="sidebar">
+                <h3>Filter by Program</h3>
+                <select id="programFilter">
+                    <option value="">Select Program</option>
+                    <% programs.forEach(function(program) { %>
+                        <option value="<%= program.program_id %>"><%= program.program_name %></option>
+                    <% }) %>
+                </select>
 
-            <h3>Filter by Course</h3>
-            <select id="courseFilter">
-                <option value="">Select Course</option>
-                <% courses.forEach(function(course) { %>
-                    <option value="<%= course.course_id %>"><%= course.course_name %></option>
-                <% }) %>
-            </select>
+                <h3>Filter by Course</h3>
+                <select id="courseFilter">
+                    <option value="">Select Course</option>
+                    <% courses.forEach(function(course) { %>
+                        <option value="<%= course.course_id %>"><%= course.course_name %></option>
+                    <% }) %>
+                </select>
 
-            <button id="applyFilter">Apply Filter</button>
+                <button id="applyFilter">Apply Filter</button>
+            </div>
+
+            <!-- Calendar container -->
+            <div id='calendar'></div>
         </div>
-
-        <!-- Calendar container -->
-        <div id='calendar'></div>
-    </div>
     </main>
 
     <!-- FullCalendar JS -->
@@ -68,7 +68,7 @@
             const courseFilter = document.getElementById('courseFilter');
             const applyFilterButton = document.getElementById('applyFilter');
             const calendarEl = document.getElementById('calendar');
-    
+
             // Initialize FullCalendar
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
@@ -77,27 +77,56 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                events: [] // Events will be added later based on the filters
+                events: [] // Initial empty events, populated by the filter
             });
             calendar.render();
-    
-            // Fetch courses based on the selected program
+
+            // Function to fetch bookings and display on the calendar
+            async function fetchAndDisplayBookings(programId, courseId) {
+    try {
+        const response = await fetch(`/api/bookings?programId=${programId}&courseId=${courseId}`);
+        const bookings = await response.json();
+
+        // Ensure bookings is an array
+        if (!Array.isArray(bookings)) {
+            console.error('Expected bookings to be an array:', bookings);
+            return;
+        }
+
+        // Clear current events from the calendar
+        calendar.removeAllEvents();
+
+        // Add bookings as events on the calendar
+        const events = bookings.map(booking => ({
+            title: `Room: ${booking.room_id} | Course: ${booking.course_id}`,
+            start: booking.start_time,
+            end: booking.end_time,
+            backgroundColor: 'blue'
+        }));
+
+        calendar.addEventSource(events);
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+    }
+}
+
+
+            // Initial fetch of all bookings
+            fetchAndDisplayBookings('', '');
+
+            // Populate course options based on selected program
             programFilter.addEventListener('change', function() {
                 const selectedProgram = programFilter.value;
-    
-                // Clear course filter options
                 courseFilter.innerHTML = '<option value="">Select Course</option>';
-    
+
                 if (selectedProgram) {
-                    // Fetch courses for the selected program from the server
                     fetch(`/api/courses/${selectedProgram}`)
                         .then(response => response.json())
                         .then(courses => {
-                            // Populate course filter with courses
                             courses.forEach(function(course) {
                                 const option = document.createElement('option');
-                                option.value = course.course_id; // Use course_id
-                                option.textContent = course.course_name; // Use course_name
+                                option.value = course.course_id;
+                                option.textContent = course.course_name;
                                 courseFilter.appendChild(option);
                             });
                         })
@@ -106,25 +135,22 @@
                         });
                 }
             });
-    
+
             // Apply filter button click event
             applyFilterButton.addEventListener('click', function() {
                 const selectedProgram = programFilter.value;
                 const selectedCourse = courseFilter.value;
-    
-                // Clear existing events from the calendar
-                calendar.removeAllEvents(); 
-    
-                // Example: Fetch events based on selected filters (you'll need to implement this logic)
-                if (selectedProgram && selectedCourse) {
-                    // Here you would typically fetch the events from the server
-                    calendar.addEvent({ title: 'Example Event', start: '2024-10-20', end: '2024-10-22' }); // Example event
-                }
-    
-                calendar.render(); // Re-render the calendar
+
+                fetchAndDisplayBookings(selectedProgram, selectedCourse);
             });
+
+            // Automatically refresh bookings every minute
+            setInterval(() => {
+                const selectedProgram = programFilter.value;
+                const selectedCourse = courseFilter.value;
+                fetchAndDisplayBookings(selectedProgram, selectedCourse);
+            }, 60000); // Refresh every 60 seconds (60000 milliseconds)
         });
     </script>
-    
 </body>
 </html>
