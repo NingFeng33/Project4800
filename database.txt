@@ -282,3 +282,4 @@ VALUES (
     1,  -- Assuming this is the ID of the conflict template
     '{"room_number": "152", "start_time": "2024-10-16 10:00", "end_time": "2024-10-16 12:00", "conflicting_start_time": "2024-10-16 11:00", "conflicting_end_time": "2024-10-16 13:00"}'
 );
+
