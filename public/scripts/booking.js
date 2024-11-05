@@ -149,7 +149,10 @@ function bookRoom() {
     .then(result => {
         if (result.success) {
             alert('Room booked successfully!');
-            // Optionally refresh the page or clear the form
+            // Hide the available rooms list
+            document.getElementById('availableRooms').style.display = 'none';
+            // Reset form inputs (optional)
+            document.getElementById('bookingForm').reset();
         } else {
             alert('Failed to book the room: ' + result.message);
         }
