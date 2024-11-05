@@ -49,6 +49,14 @@ const Course = sequelize.define(
                 key: "program_id"
             }
         },
+        length_week: {
+            type: DataTypes.INTEGER,
+            allowNull: true  
+        },
+        size: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        }
     },
     {
         tableName: "Courses",
