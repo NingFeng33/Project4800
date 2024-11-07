@@ -1,13 +1,13 @@
 const {DataTypes, Op} = require('sequelize');
 const { sequelize } = require('../config/db');
 const express = require("express");
-const { isAuthenticated } = require("../middleware/authMiddleware");
+const { isAuthenticated , isAdmin } = require("../middleware/authMiddleware");
 const {
   getLogin,
   getSignup,
   postLogin,
   postSignup,
-  getDashboard,
+  getAdminDashboard,
   logout,
   checkRoomAvailability,
   bookRoom,
@@ -23,7 +23,7 @@ router.get("/logout", logout);
 router.post("/login", postLogin);
 router.post("/signup", postSignup);
 
-router.get("/admin/dashboard", isAuthenticated, (req, res) => {
+router.get("/admin/dashboard", isAuthenticated, isAdmin, getAdminDashboard, (req, res) => {
   res.render("dashboard", { message: "Welcome to the Admin Dashboard" });
 });
 
@@ -36,7 +36,7 @@ router.get("/dashboard", isAuthenticated, (req, res) => {
 });
 
 // Render the booking page
-router.get('/admin/booking', isAuthenticated,(req, res) => {
+router.get('/admin/booking', isAuthenticated, isAdmin, (req, res) => {
   res.render('booking');
 });
 

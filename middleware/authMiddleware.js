@@ -1,11 +1,15 @@
 exports.isAuthenticated = (req, res, next) => {
-  if (
-    req.session.userId == "Admin" ||
-    req.session.userId == "Faculty" ||
-    req.session.userId
-  ) {
+  if (req.session && req.session.userId) {
     next();
   } else {
-    res.redirect("/");
+    res.redirect("/login");
+  }
+};
+
+exports.isAdmin = (req, res, next) => {
+  if (req.session && req.session.userId && req.session.role === "Admin") {
+    next();
+  } else {
+    res.status(403).send("Access denied. Admins only."); 
   }
 };

@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { fetchData } = require('../controllers/dataController');
+const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
 
 
 router.get('/', async (req, res) => {
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 
-router.get('/view', async (req, res) => {
+router.get('/view', isAdmin, isAuthenticated, async (req, res) => {
     try {
         const db = await initializeDatabase();
         console.log('Database connected successfully!');

@@ -7,6 +7,7 @@ const { Course } = require('../models/course');
 const { sequelize } = require('../config/db');
 //const sequelize = require("../config/db");
 const bcrypt = require("bcrypt");
+const { Op } = require('sequelize');
 
 console.log(Room);
 // Login
@@ -40,14 +41,15 @@ exports.postLogin = async (req, res) => {
 
     req.session.userId = user.user_id;
     req.session.role = roleName;  // Store the role name for easier checks
+    req.session.firstName = user.F_Name;
 
     req.session.save(() => {
       switch(roleName) {
         case 'Admin':
-          res.redirect("/admin/booking");
+          res.redirect("/admin/dashboard");
           break;
         case 'Faculty':
-          res.redirect("/faculty/dashboard");
+          res.redirect("/faculty");
           break;
         default:
           res.redirect("/dashboard");
@@ -183,6 +185,47 @@ try {
       res.status(500).send('Error booking room');
   }
 };
+
+exports.getAdminDashboard = async (req, res) => {
+  try {
+    const today = new Date().toISOString().slice(0, 10); // Format today's date
+    console.log("Today's date:", today); 
+
+    // Fetch today's bookings
+    const todayBookings = await Booking.findAll({
+      where: { booking_date: today },
+      include: [
+        { model: Course, attributes: ['course_name'] },
+        { model: Room, attributes: ['room_number'] }
+      ]
+    });
+
+    console.log("Bookings for today:", todayBookings);
+
+    // Fetch future bookings
+    const futureBookings = await Booking.findAll({
+      where: {
+        booking_date: {
+          [Op.gt]: today // Dates greater than today
+        }
+      },
+      include: [
+        { model: Course, attributes: ['course_name'] },
+        { model: Room, attributes: ['room_number'] }
+      ],
+      order: [['booking_date', 'ASC'], ['start_time', 'ASC']] // Order by date and time
+    });
+
+    console.log("Future bookings:", futureBookings);
+
+    // Render dashboard with both today's bookings and future bookings
+    res.render('dashboard', { bookings: todayBookings, futureBookings });
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
 
 // Dashboard
 // exports.getDashboard = (_req, res) => {

@@ -26,9 +26,14 @@
                 <div class="card">
                     <h3>Today's Schedule</h3>
                     <ul>
-                        <li>Course A: 10:00 AM - Room 101</li>
-                        <li>Course B: 12:00 PM - Room 202</li>
-                        <li>Course C: 2:00 PM - Room 303</li>
+                        <% bookings.forEach(booking => { %>
+                            <li>
+                                <strong>Course:</strong> <%= booking.Course.course_name %> <br>
+                                <strong>Time:</strong> <%= new Date(booking.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %> - 
+                                <%= new Date(booking.end_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %> <br>
+                                <strong>Room:</strong> <%= booking.Room.room_number %>
+                            </li>
+                        <% }) %>
                     </ul>
                 </div>
 
@@ -47,6 +52,31 @@
                         <li>Room 202 has a conflict at 2:00 PM.</li>
                         <li>New schedule added for Course D.</li>
                     </ul>
+                </div>
+
+                <div class="card future-schedule">
+                    <h3>Future Schedule</h3>
+                    <div class="schedule-list">
+                        <% if (futureBookings.length > 0) { %>
+                            <% futureBookings.forEach(booking => { %>
+                                <p>
+                                    <strong>Course:</strong> <%= booking.Course.course_name %><br>
+                                    <strong>Time:</strong>
+                                    <%= new Date(booking.start_time).toLocaleString('en-US', { 
+                                        hour: 'numeric', minute: 'numeric', hour12: true 
+                                    }) %> - 
+                                    <%= new Date(booking.end_time).toLocaleString('en-US', { 
+                                        hour: 'numeric', minute: 'numeric', hour12: true 
+                                    }) %><br>
+                                    <strong>Date:</strong> 
+                                    <%= new Date(booking.booking_date).toLocaleDateString('en-US') %><br>
+                                    <strong>Room:</strong> <%= booking.Room.room_number %>
+                                </p>
+                            <% }) %>
+                        <% } else { %>
+                            <p>No upcoming bookings.</p>
+                        <% } %>
+                    </div>
                 </div>
             </section>
         </main>

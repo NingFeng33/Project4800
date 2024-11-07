@@ -31,6 +31,31 @@ body, html {
     outline: none;
 }
 
+.future-schedule .schedule-list {
+    max-height: 150px; /* Adjust height to show only 3 courses */
+    overflow-y: auto;
+}
+
+.future-schedule .schedule-list p {
+    margin: 10px 0;
+    font-size: 0.95em;
+    color: #555;
+}
+
+/* Add styling for scrollbar to make it look nice */
+.future-schedule .schedule-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.future-schedule .schedule-list::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+}
+
+.future-schedule .schedule-list::-webkit-scrollbar-track {
+    background-color: #f4f4f4;
+}
+
 #program-filter {
     padding: 8px;
     border-radius: 5px;
