@@ -1,0 +1,60 @@
+<!-- views/notifications.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Notifications</title>
+    <!-- Include Toastr CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>Your Notifications</h1>
+    <ul id="notificationList"></ul>
+
+    <!-- Include jQuery and Toastr JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        // Fetch notifications
+        fetch("/notifications")
+          .then((response) => response.json())
+          .then((notifications) => {
+            notifications.forEach((notif) => {
+              const li = $("<li>").text(
+                `${notif.message} (${new Date(
+                  notif.created_at
+                ).toLocaleString()})`
+              );
+              if (!notif.is_read) {
+                li.addClass("unread");
+                const markReadBtn = $("<button>")
+                  .text("Mark as Read")
+                  .click(() => {
+                    fetch(`/notifications/${notif.notification_id}/read`, {
+                      method: "POST",
+                    }).then(() => {
+                      li.removeClass("unread");
+                      markReadBtn.remove();
+                    });
+                  });
+                li.append(markReadBtn);
+              }
+              $("#notificationList").append(li);
+            });
+          });
+      });
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/scripts/socket.js"></script>
+    <style>
+      .unread {
+        font-weight: bold;
+      }
+    </style>
+  </body>
+</html>

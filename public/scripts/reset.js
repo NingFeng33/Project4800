@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function updateUserPassword(updatedData) {
     try {
-      const response = await fetch("/update-password", {
+      const response = await fetch("/reset/update-password", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

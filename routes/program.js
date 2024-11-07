@@ -3,9 +3,21 @@ const {
   getPrograms,
   getCoursesByProgramId,
   viewProgramsAndCourses,
-} = require("../controllers/programController");
+} = require("../controllers/program");
+const Program = require("../models/program");
+const Course = require("../models/course");
+const { isAuthenticated } = require("../middleware/auth");
 
 const router = express.Router();
+
+// Fetch all programs - API route
+router.get("/", isAuthenticated, getPrograms);
+
+// Endpoint to get courses by program ID
+router.get("/courses/:programId", isAuthenticated, getCoursesByProgramId);
+
+// View programs and courses
+router.get("/calendar", isAuthenticated, viewProgramsAndCourses);
 
 // Fetch all programs - API route
 router.get("/api/programs", async (req, res) => {
@@ -29,24 +41,6 @@ router.get("/api/courses/:programId", async (req, res) => {
   } catch (error) {
     console.error("Failed to fetch courses:", error);
     res.status(500).json({ message: "Failed to fetch courses" });
-  }
-});
-
-router.get("/view", async (req, res) => {
-  try {
-    await sequelize.authenticate();
-    console.log("Database connected successfully!");
-
-    const programs = await Program.findAll();
-    const courses = await Course.findAll();
-
-    console.log("Programs:", programs);
-    console.log("Courses:", courses);
-
-    res.render("view", { programs, courses });
-  } catch (error) {
-    console.error("Error fetching data from database:", error);
-    res.status(500).send("Error fetching data from database");
   }
 });
 

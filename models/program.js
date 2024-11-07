@@ -19,4 +19,5 @@ const Program = sequelize.define(
     timestamps: false,
   }
 );
-module.exports = { Program };
+
+module.exports = Program;

@@ -1,0 +1,40 @@
+<link rel="stylesheet" href="/css/side_bar.css" />
+<nav class="side_bar">
+  <ul>
+    <li><a href="/dashboard">Dashboard Overview</a></li>
+    <li><a href="/view">Calendar</a></li>
+    <li><a href="/bookings">Create Schedule</a></li>
+    <li><a href="/manager">Edit Course/Room</a></li>
+    <li class="toggle-section">
+      <a href="#" id="campusMapToggle" onclick="toggleMapLinks()"
+        >Campus Map ▼</a
+      >
+      <ul id="mapLinks" class="hidden">
+        <li>
+          <a
+            href="#"
+            onclick="openMapPopup('/maps/atc%20Floor%201.pdf'); return false;"
+            >Floor 1</a
+          >
+        </li>
+        <li>
+          <a
+            href="#"
+            onclick="openMapPopup('/maps/atc%20Floor%202.pdf'); return false;"
+            >Floor 2</a
+          >
+        </li>
+        <li>
+          <a
+            href="#"
+            onclick="openMapPopup('/maps/atc%20Floor%203.pdf'); return false;"
+            >Floor 3</a
+          >
+        </li>
+      </ul>
+    </li>
+    <li><a href="/notifications">Notifications</a></li>
+    <li><a href="/reset">Settings</a></li>
+  </ul>
+</nav>
+<script src="/scripts/dashboard.js"></script>

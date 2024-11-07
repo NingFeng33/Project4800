@@ -243,43 +243,79 @@ INSERT INTO Roles (role_name, role_description) VALUES ('Faculty', 'Faculty acce
 ALTER TABLE Room_Booking
 ADD COLUMN end_date DATE;
 
+ALTER TABLE courses
+ADD COLUMN length_week INT,
+ADD COLUMN size INT;
+
+
+UPDATE courses SET length_week = 8, size = 17 WHERE course_id = 1;
+UPDATE courses SET length_week = 8, size = 17 WHERE course_id = 2;
+UPDATE courses SET length_week = 8, size = 17 WHERE course_id = 3;
+UPDATE courses SET length_week = 8, size = 17 WHERE course_id = 4;
+UPDATE courses SET length_week = 6, size = 17 WHERE course_id = 5;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 6;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 7;
+UPDATE courses SET length_week = 5, size = 17 WHERE course_id = 8;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 9;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 10;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 11;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 12;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 13;
+UPDATE courses SET length_week = 5, size = 17 WHERE course_id = 14;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 15;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 16;
+UPDATE courses SET length_week = 5, size = 17 WHERE course_id = 17;
+UPDATE courses SET length_week = 5, size = 17 WHERE course_id = 18;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 19;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 20;
+UPDATE courses SET length_week = 2, size = 17 WHERE course_id = 21;
+UPDATE courses SET length_week = 7, size = 17 WHERE course_id = 22;
+UPDATE courses SET length_week = 1, size = 34 WHERE course_id = 23;
+UPDATE courses SET length_week = 4, size = 34 WHERE course_id = 24;
+UPDATE courses SET length_week = 2, size = 34 WHERE course_id = 25;
+UPDATE courses SET length_week = 2, size = 34 WHERE course_id = 26;
+UPDATE courses SET length_week = 5, size = 34 WHERE course_id = 27;
+UPDATE courses SET length_week = 2, size = 34 WHERE course_id = 28;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 29;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 30;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 31;
+UPDATE courses SET length_week = 2, size = 17 WHERE course_id = 32;
+UPDATE courses SET length_week = 2, size = 17 WHERE course_id = 33;
+UPDATE courses SET length_week = 2, size = 17 WHERE course_id = 34;
+UPDATE courses SET length_week = 2, size = 34 WHERE course_id = 35;
+UPDATE courses SET length_week = 4, size = 34 WHERE course_id = 36;
+UPDATE courses SET length_week = 3, size = 34 WHERE course_id = 37;
+UPDATE courses SET length_week = 2, size = 34 WHERE course_id = 38;
+UPDATE courses SET length_week = 5, size = 34 WHERE course_id = 39;
+UPDATE courses SET length_week = 3, size = 34 WHERE course_id = 40;
+UPDATE courses SET length_week = 5, size = 34 WHERE course_id = 41;
+UPDATE courses SET length_week = 1, size = 34 WHERE course_id = 42;
+UPDATE courses SET length_week = 7, size = 34 WHERE course_id = 43;
+
 
 -- Create table for 'Notification'
 CREATE TABLE Notifications (
     notification_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
     template_id INT,
-    parameters JSON, -- JSON object to store dynamic parameters {"user_name": "John", "course_name": "Math"}
-    is_read BOOLEAN DEFAULT FALSE,
+    parameters JSON,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES User(user_id),
-    FOREIGN KEY (template_id) REFERENCES notification_templates(template_id)
+    FOREIGN KEY (template_id) REFERENCES notificationTemplates(template_id)
 );
 
--- Create table for 'notification_templates'
-CREATE TABLE notification_templates (
-    template_id INT AUTO_INCREMENT PRIMARY KEY,
-    template_message TEXT NOT NULL,  -- e.g., "Hello {user_name}, your course {course_name} has been updated."
-    description VARCHAR(255)  -- A description of the template for easy identification
+-- Create table for 'Notofication_users'
+CREATE TABLE NotificationUsers (
+    notification_id INT,
+    user_id INT,
+    is_read BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (notification_id, user_id),
+    FOREIGN KEY (notification_id) REFERENCES Notifications(notification_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
 );
 
--- Inserting sample template 
-INSERT INTO notification_templates (template_message, description) 
-VALUES ("Hello {user_name}, your course {course_name} has been updated.", "Course Update Notification");
-
-INSERT INTO notification_templates (template_message, description)
-VALUES (
-    "Room conflict detected for room {room_number}. Reservation from {start_time} to {end_time} conflicts with another reservation from {conflicting_start_time} to {conflicting_end_time}. Please review the schedule.",
-    "Room Conflict Notification")
-
--- Inserting sample notification
-INSERT INTO Notifications (user_id, template_id, parameters)
-VALUES (1, 1, '{"user_name": "John", "course_name": "Math 101"}');
-
-INSERT INTO Notifications (user_id, template_id, parameters)
-VALUES (
-    1,  -- User who should be notified
-    1,  -- Assuming this is the ID of the conflict template
-    '{"room_number": "152", "start_time": "2024-10-16 10:00", "end_time": "2024-10-16 12:00", "conflicting_start_time": "2024-10-16 11:00", "conflicting_end_time": "2024-10-16 13:00"}'
+-- Create table for 'Notification_template'
+CREATE TABLE NotificationTemplates (
+  template_id INT AUTO_INCREMENT PRIMARY KEY,
+  template_message TEXT NOT NULL,
+  description VARCHAR(255)
 );
 

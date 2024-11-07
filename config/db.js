@@ -1,7 +1,3 @@
-// process.env.TZ = "America/Vancouver";
-// console.log("Current timezone set in Node.js:", process.env.TZ);
-// console.log("Current time according to Node.js:", new Date().toString());
-// console.log("UTC time according to Node.js:", new Date().toUTCString());
 require("dotenv").config();
 const { Sequelize } = require("sequelize");
 

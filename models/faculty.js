@@ -20,4 +20,4 @@ const Faculty = sequelize.define(
   }
 );
 
-module.exports = { Faculty };
+module.exports = Faculty;

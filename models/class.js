@@ -20,4 +20,4 @@ const Class = sequelize.define(
   }
 );
 
-module.exports = { Class };
+module.exports = Class;

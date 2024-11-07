@@ -1,7 +1,8 @@
-const { Program } = require("../models/program");
-const { Course } = require("../models/course");
+const Program = require("../models/program");
+const Course = require("../models/course");
 
-exports.getPrograms = async (req, res) => {
+// GET: all programs
+exports.getPrograms = async (_, res) => {
   try {
     const programs = await Program.findAll();
     res.json(programs);
@@ -11,6 +12,7 @@ exports.getPrograms = async (req, res) => {
   }
 };
 
+// GET: get course by program id
 exports.getCoursesByProgramId = async (req, res) => {
   try {
     const programId = req.params.programId;
@@ -32,7 +34,7 @@ exports.viewProgramsAndCourses = async (req, res) => {
     const programs = await Program.findAll();
     const courses = await Course.findAll();
 
-    res.render("view", { programs, courses });
+    res.render("calendar", { programs, courses });
   } catch (error) {
     console.error("Error fetching data from database:", error);
     res.status(500).send("Error fetching data from database");

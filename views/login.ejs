@@ -2,8 +2,10 @@
 <html>
   <head>
     <title>Login</title>
+    <link rel="stylesheet" href="/css/login_page.css" />
   </head>
   <body>
+    <h1>BCIT ATC SCHEDULING SYSTEM</h1>
     <h2>Login</h2>
     <% if (message) { %>
     <p style="color: red"><%= message %></p>
@@ -20,6 +22,5 @@
       <button type="submit">Login</button>
     </form>
     <p>Don't have an account? <a href="/signup">Sign up here</a></p>
-    <p>Forgot your password? <a href="/email">Reset your password</a></p>
   </body>
 </html>

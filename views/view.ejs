@@ -29,35 +29,42 @@
   </head>
 
   <body>
-    <div class="container">
-      <!-- Sidebar for filters -->
-      <div class="sidebar">
-        <h3>Filter by Program</h3>
-        <select id="programFilter">
-          <option value="">Select Program</option>
-          <% programs.forEach(function(program) { %>
-          <option value="<%= program.program_id %>">
-            <%= program.program_name %>
-          </option>
-          <% }) %>
-        </select>
+    <!-- Top Bar -->
+    <%- include('partials/top_bar') %>
+    <!-- Sidebar -->
+    <%- include('partials/side_bar') %>
 
-        <h3>Filter by Course</h3>
-        <select id="courseFilter">
-          <option value="">Select Course</option>
-          <% courses.forEach(function(course) { %>
-          <option value="<%= course.course_id %>">
-            <%= course.course_name %>
-          </option>
-          <% }) %>
-        </select>
+    <main class="main-content">
+      <div class="container">
+        <!-- Sidebar for filters -->
+        <div class="sidebar">
+          <h3>Filter by Program</h3>
+          <select id="programFilter">
+            <option value="">Select Program</option>
+            <% programs.forEach(function(program) { %>
+            <option value="<%= program.program_id %>">
+              <%= program.program_name %>
+            </option>
+            <% }) %>
+          </select>
 
-        <button id="applyFilter">Apply Filter</button>
+          <h3>Filter by Course</h3>
+          <select id="courseFilter">
+            <option value="">Select Course</option>
+            <% courses.forEach(function(course) { %>
+            <option value="<%= course.course_id %>">
+              <%= course.course_name %>
+            </option>
+            <% }) %>
+          </select>
+
+          <button id="applyFilter">Apply Filter</button>
+        </div>
+
+        <!-- Calendar container -->
+        <div id="calendar"></div>
       </div>
-
-      <!-- Calendar container -->
-      <div id="calendar"></div>
-    </div>
+    </main>
 
     <!-- FullCalendar JS -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>

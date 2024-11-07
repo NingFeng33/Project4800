@@ -23,4 +23,4 @@ const Role = sequelize.define(
   }
 );
 
-module.exports = { Role }; // Exporting as Role
+module.exports = Role; // Exporting as Role

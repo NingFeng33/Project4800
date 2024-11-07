@@ -3,26 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard</title>
+    <title>Settings</title>
+    <link rel="stylesheet" href="/css/reset.css" />
   </head>
   <body>
-    <!-- <label for="current-password">Current password:</label>
-    <input type="password" id="current-password" name="current-password" />
-    <button id="current-password-button" type="submit">submit</button> -->
+    <div class="form-container">
+      <h1>Change Password</h1>
+      <label for="new-password">New passowrd:</label>
+      <input type="password" id="new-password" name="new-password" />
 
-    <label for="new-password">New passowrd:</label>
-    <input type="password" id="new-password" name="new-password" />
+      <label for="new-password-confirm">Confirm new passowrd:</label>
+      <input
+        type="password"
+        id="new-password-confirm"
+        name="new-password-confirm"
+      />
+      <button id="new-password-button">Submit</button>
 
-    <label for="new-password-confirm">New passowrd:</label>
-    <input
-      type="password"
-      id="new-password-confirm"
-      name="new-password-confirm"
-    />
-    <button id="new-password-button">submit</button>
-
-    <div id="response"></div>
-
+      <div id="response"></div>
+    </div>
     <script src="/scripts/reset.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/scripts/socket.js"></script>
   </body>
 </html>

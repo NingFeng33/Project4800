@@ -23,7 +23,8 @@
     "mysql2": "^3.11.3",
     "nodemailer": "^6.9.15",
     "object-inspect": "^1.13.2",
-    "sequelize": "^6.37.4"
+    "sequelize": "^6.37.4",
+    "socket.io": "^4.8.1"
   },
   "repository": {
     "type": "git",
