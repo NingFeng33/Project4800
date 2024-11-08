@@ -1,7 +1,8 @@
 // routes/dataRoutes.js
 const express = require('express');
 const router = express.Router();
-const { fetchData } = require('../controllers/dataController');
+const { fetchData } = require('../controllers/authController');
+const { Booking, Room, Course } = require('../models');
 
 
 router.get('/', async (req, res) => {
@@ -33,5 +34,36 @@ router.get('/view', async (req, res) => {
     }
 });
 
+router.get('/bookings', async (req, res) => {
+    console.log("GET request received at /api/bookings"); // 확인용 로그
+    try {
+        const bookings = await Booking.findAll({
+            include: [
+                {
+                    model: Room,
+                    attributes: ['room_number'],
+                },
+                {
+                    model: Course,
+                    attributes: ['course_id'],
+                }
+            ],
+            attributes: ['room_id', 'start_time', 'end_time', 'course_id']
+        });
+
+        const bookingData = bookings.map(booking => ({
+            room_id: booking.room_id,
+            room_number: booking.Room.room_number,
+            course_id: booking.course_id,
+            start_time: booking.start_time,
+            end_time: booking.end_time
+        }));
+
+        res.json(bookingData);
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+        res.status(500).json({ message: 'Error fetching bookings' });
+    }
+});
 
 module.exports = router;

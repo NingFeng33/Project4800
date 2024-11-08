@@ -1,3 +1,4 @@
+// models/program.js
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/db");
 
@@ -12,7 +13,7 @@ const Program = sequelize.define(
         program_name: {
             type: DataTypes.STRING(255),
             allowNull: false
-        },
+        }
     },
     {
         tableName: "Program",
@@ -20,6 +21,4 @@ const Program = sequelize.define(
     }
 );
 
-Program.hasMany(require('./course').Course, { foreignKey: 'program_id' });
-
-module.exports = { Program };
+module.exports = Program;

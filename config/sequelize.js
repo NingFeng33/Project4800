@@ -1,16 +1,10 @@
-const { sequelize } = require('../config/db');
-const { Course } = require('../models/course');
-const { Booking } = require('../models/booking');
-const { Room } = require('../models/room');
-const { Program } = require('../models/program'); 
+// config/sequelize.js
+const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
-// Define associations
-Course.hasMany(Booking, { foreignKey: 'course_id' });
-Booking.belongsTo(Course, { foreignKey: 'course_id' });
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    dialect: 'mysql',
+});
 
-Room.hasMany(Booking, { foreignKey: 'room_id' });
-Booking.belongsTo(Room, { foreignKey: 'room_id' });
-
-Course.belongsTo(Program, { foreignKey: 'program_id' });
-
-module.exports = { sequelize, Course, Booking, Room };
+module.exports = { sequelize };
