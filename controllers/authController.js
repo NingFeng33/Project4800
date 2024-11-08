@@ -115,11 +115,12 @@ exports.checkRoomAvailability = async (req, res) => {
   }
 
   try {
+    // `findAvailableRooms` 메서드 호출
     const availableRooms = await Room.findAvailableRooms(date, endDate, startTime, endTime, courseId);
     res.json({ success: true, availableRooms });
   } catch (error) {
     console.error("Error checking room availability:", error);
-    res.status(500).send("Error checking room availability");
+    res.status(500).json({ success: false, message: "Error checking room availability" });
   }
 };
 
@@ -144,6 +145,6 @@ exports.bookRoom = async (req, res) => {
     res.json({ success: true, message: "Room booked successfully" });
   } catch (error) {
     console.error("Error booking room:", error);
-    res.status(500).send("Error booking room");
+    res.status(500).json({ success: false, message: "Error booking room" });
   }
 };

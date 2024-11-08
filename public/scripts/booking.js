@@ -57,7 +57,8 @@ async function checkAvailability() {
     const startTime = document.getElementById('startTimeInput').value;
     const endTime = document.getElementById('endTimeInput').value;
     console.log('Checking availability:', programId, courseId, date, endDate, startTime, endTime);
-    if (!programId || !courseId || !date|| !endDate || !startTime || !endTime) {
+
+    if (!programId || !courseId || !date || !endDate || !startTime || !endTime) {
         alert('Please fill all fields!');
         return;
     }
@@ -65,12 +66,21 @@ async function checkAvailability() {
     try {
         const response = await fetch('/admin/booking/check-availability', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ date, endDate, startTime, endTime, courseId })
         });
 
-        const result = await response.json();
+        // 응답 상태 확인
+        if (!response.ok) { // 응답이 성공적이지 않을 경우
+            const errorText = await response.text(); // 에러 내용을 텍스트로 확인
+            console.error('Failed to check availability:', errorText); // 에러 메시지 출력
+            alert('Server error: ' + errorText);
+            return; // 함수 종료
+        }
+
+        const result = await response.json(); // 응답을 JSON으로 변환
         console.log('Availability result:', result);
+
         if (result.success) {
             displayAvailableRooms(result.availableRooms);
         } else {
@@ -82,6 +92,7 @@ async function checkAvailability() {
         alert('Error checking availability');
     }
 }
+
 
 function displayAvailableRooms(rooms) {
     const roomsTableBody = document.getElementById('availableRooms').getElementsByTagName('tbody')[0];
