@@ -174,7 +174,7 @@ function bookRoom() {
         console.log(result); // 서버로부터 받은 결과를 확인합니다.
         if (result.success) {
             alert('Room booked successfully!');
-            document.getElementById('availableRooms').innerHTML = ''; // Clear the list after booking
+            document.getElementById('availableRooms').style.display = 'none'; // Clear the list after booking
 
             // 방어 코드: room 객체와 room_number 확인
             const roomNumber = result.room && result.room.room_number ? result.room.room_number : 'Unknown Room';
@@ -209,7 +209,7 @@ function bookRoom() {
                     window.calendar.refetchEvents();
                 }
             }, 100); // 100ms마다 확인
-
+            document.getElementById('bookingForm').reset(); // Reset the form
         } else {
             alert('Failed to book the room: ' + result.message);
         }

@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "- git clone https://github.com/NingFeng33/Project4800.git - cd Project4800 - npm init -y - npm install express mysql2 dotenv",
   "main": "app.js",
-
   "scripts": {
     "start": "node app.js",
     "test": "jest"
@@ -25,7 +24,7 @@
     "mysql2": "^3.11.3",
     "nodemon": "^3.1.7",
     "random-bytes": "^1.0.0",
-    "sequelize": "^6.37.4"
+    "sequelize": "^6.37.5"
   },
   "repository": {
     "type": "git",
