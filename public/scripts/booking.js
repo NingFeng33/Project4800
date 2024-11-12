@@ -148,7 +148,7 @@ function bookRoom() {
     // Send the booking request to the server
     fetch('/admin/booking/book-room', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
             roomId: selectedRoomId,
             date: date,
@@ -160,45 +160,9 @@ function bookRoom() {
     })
     .then(response => response.json())
     .then(result => {
-        console.log(result); // 서버로부터 받은 결과를 확인합니다.
         if (result.success) {
             alert('Room booked successfully!');
             document.getElementById('availableRooms').innerHTML = ''; // Clear the list after booking
-
-            // 방어 코드: room 객체와 room_number 확인
-            const roomNumber = result.room && result.room.room_number ? result.room.room_number : 'Unknown Room';
-
-            // Convert to ISO format for FullCalendar
-            const start = new Date(`${date}T${startTime}`).toISOString();
-            const end = new Date(`${endDate}T${endTime}`).toISOString();
-            
-            console.log("Adding event to calendar:", {
-                title: `Booked: ${roomNumber}`,
-                start: start,
-                end: end
-            });
-
-            // 캘린더가 초기화될 때까지 대기
-            const waitForCalendar = setInterval(() => {
-                if (window.calendar && typeof window.calendar.addEvent === 'function') {
-                    // Add the new booking directly to the calendar
-                    window.calendar.addEvent({
-                        title: `Booked: ${roomNumber}`,
-                        start: start,
-                        end: end,
-                        extendedProps: {
-                            roomId: selectedRoomId,
-                            courseId: courseId
-                        }
-                    });
-                    clearInterval(waitForCalendar); // 대기 중지
-                    
-                    // 캘린더 다시 렌더링 및 이벤트 새로 고침
-                    window.calendar.render();
-                    window.calendar.refetchEvents();
-                }
-            }, 100); // 100ms마다 확인
-
         } else {
             alert('Failed to book the room: ' + result.message);
         }
