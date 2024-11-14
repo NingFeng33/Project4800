@@ -122,5 +122,58 @@ router.get('/rooms', async (req, res) => {
   }
 });
 
+// Update course by ID
+router.put('/courses/:id/edit', async (req, res) => {
+  const { id } = req.params;
+  const { courseCode, courseName, programName } = req.body;
+
+  try {
+      const course = await Course.findByPk(id);
+      if (!course) {
+          return res.status(404).send('Course not found');
+      }
+
+      const program = await Program.findOne({ where: { program_name: programName } });
+      if (!program) {
+          return res.status(404).send('Program not found');
+      }
+
+      await course.update({
+          course_code: courseCode,
+          course_name: courseName,
+          program_id: program.program_id,
+      });
+
+      res.json({ message: 'Course updated successfully' });
+  } catch (error) {
+      console.error('Failed to update course:', error);
+      res.status(500).send('Server error');
+  }
+});
+
+
+// Update room by ID
+router.put('/rooms/:id/edit', async (req, res) => {
+  const { id } = req.params;
+  const { roomNumber, capacity } = req.body;
+
+  try {
+      const room = await Room.findByPk(id);
+      if (!room) {
+          return res.status(404).send('Room not found');
+      }
+
+      await room.update({
+          room_number: roomNumber,
+          capacity: capacity,
+      });
+
+      res.json({ message: 'Room updated successfully' });
+  } catch (error) {
+      console.error('Failed to update room:', error);
+      res.status(500).send('Server error');
+  }
+});
+
 
 module.exports = router;

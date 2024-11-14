@@ -53,6 +53,8 @@ function displayCourses(courses) {
             <td>${course.course_name}</td>
             <td>${course.Program ? course.Program.program_name : 'N/A'}</td>
             <td>
+                <button onclick="openEditModal('course', ${course.course_id}, '${course.course_code}', 
+                '${course.course_name}', '${course.Program ? course.Program.program_name : ''}')">Edit</button>
                 <button onclick="deleteCourse(${course.course_id})">Delete</button>
             </td>
         `;
@@ -70,11 +72,45 @@ function displayRooms(rooms) {
             <td>${room.room_number}</td>
             <td>${room.capacity}</td>
             <td>
+                <button onclick="openEditModal('room', ${room.room_id}, '${room.room_number}', 
+                ${room.capacity})">Edit</button>
                 <button onclick="deleteRoom(${room.room_id})">Delete</button>
             </td>
         `;
         tableBody.appendChild(row);
     });
+}
+
+function openEditModal(type, id, codeOrNumber, nameOrCapacity, programName = '') {
+    const modal = document.getElementById('edit-modal');
+    const editForm = document.getElementById('editForm');
+    
+    // Set form action based on type (course or room)
+    editForm.action = `/${type}s/${id}/edit`; 
+
+    // Set the values for editing
+    if (type === 'course') {
+        document.getElementById('editCodeOrNumberLabel').textContent = 'Course Code';
+        document.getElementById('editNameOrCapacityLabel').textContent = 'Course Name';
+        document.getElementById('editProgram').style.display = 'block';
+        document.getElementById('editProgramInput').value = programName;
+    } else {
+        document.getElementById('editCodeOrNumberLabel').textContent = 'Room Number';
+        document.getElementById('editNameOrCapacityLabel').textContent = 'Capacity';
+        document.getElementById('editProgram').style.display = 'none';
+    }
+
+    // Fill input values
+    document.getElementById('editId').value = id;
+    document.getElementById('editCodeOrNumberInput').value = codeOrNumber;
+    document.getElementById('editNameOrCapacityInput').value = nameOrCapacity;
+
+    modal.style.display = 'block';
+}
+
+// Close modal function
+function closeModal() {
+    document.getElementById('edit-modal').style.display = 'none';
 }
 
 // Update pagination controls
@@ -146,3 +182,64 @@ async function deleteRoom(roomId) {
     }
 }
 
+document.addEventListener("DOMContentLoaded", function() {
+    function openModal() {
+        const modal = document.getElementById("edit-modal");
+        const backdrop = document.getElementById("modal-backdrop");
+
+        if (modal && backdrop) {
+            modal.style.display = "block";
+            backdrop.style.display = "block";
+        } else {
+            console.error("Modal or backdrop element not found.");
+        }
+    }
+
+    function closeModal() {
+        const modal = document.getElementById("edit-modal");
+        const backdrop = document.getElementById("modal-backdrop");
+
+        if (modal && backdrop) {
+            modal.style.display = "none";
+            backdrop.style.display = "none";
+        } else {
+            console.error("Modal or backdrop element not found.");
+        }
+    }
+
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+});
+
+
+function openEditModal(type, id, codeOrNumber, nameOrCapacity, program) {
+    const modal = document.getElementById("edit-modal");
+    const backdrop = document.getElementById("modal-backdrop");
+    
+    document.getElementById("editType").textContent = type === 'course' ? 'Course' : 'Room';
+    document.getElementById("editId").value = id;
+    document.getElementById("editCodeOrNumberInput").value = codeOrNumber;
+    document.getElementById("editNameOrCapacityInput").value = nameOrCapacity;
+
+    // Show or hide the program field based on type
+    const programField = document.getElementById("editProgram");
+    if (type === 'course') {
+        programField.style.display = 'block';
+        document.getElementById("editProgramInput").value = program || '';
+    } else {
+        programField.style.display = 'none';
+    }
+
+    // Set the form action dynamically based on type
+    const editForm = document.getElementById("editForm");
+    editForm.action = `/${type}s/${id}/edit`;
+
+    // Show modal and backdrop
+    modal.style.display = "block";
+    backdrop.style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById("edit-modal").style.display = "none";
+    document.getElementById("modal-backdrop").style.display = "none";
+}

@@ -7,7 +7,7 @@ exports.isAuthenticated = (req, res, next) => {
 };
 
 exports.isAdmin = (req, res, next) => {
-  if (req.session && req.session.userId && req.session.role === "Admin") {
+  if (req.session && req.session.role === "Admin") {
     next();
   } else {
     res.status(403).send("Access denied. Admins only."); 

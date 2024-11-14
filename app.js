@@ -10,6 +10,7 @@ const { sequelize, User, Role} = require("./models");
 const authRoutes = require("./routes/auth");
 const manager = require('./routes/manager');
 const factuly = require('./routes/facultyRoutes');
+const userRoutes = require('./routes/userRoutes');
 const app = express();
 const { isAuthenticated, isAdmin } = require('./middleware/authMiddleware');
 
@@ -18,16 +19,17 @@ app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
-app.use('/', manager);
+app.use('/admin', manager, userRoutes);
 app.use(factuly); 
+
 
 const sessionStore = new SequelizeStore({ db: sequelize });
 
-app.get('/manager', isAdmin, isAuthenticated, (req, res) => {
+app.get('/admin/manager', isAuthenticated, isAdmin, (req, res) => {
   res.render('manager');
 });
 
-app.get('/factuly', isAdmin, isAuthenticated, (req, res) => {
+app.get('/factuly', isAuthenticated, (req, res) => {
   res.render('factuly');
 });
 

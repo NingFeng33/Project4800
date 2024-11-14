@@ -10,7 +10,7 @@ const {
   getAdminDashboard,
   logout,
   checkRoomAvailability,
-  bookRoom,
+  bookRoom
 } = require("../controllers/authController");
 const { Program } = require('../models/program'); 
 const { Course } = require('../models/course');
@@ -31,14 +31,15 @@ router.get("/faculty/dashboard", isAuthenticated, (req, res) => {
   res.render("dashboard", { message: "Welcome to the Faculty Dashboard" });
 });
 
-router.get("/dashboard", isAuthenticated, (req, res) => {
-  res.render("dashboard", { message: "Welcome to the Dashboard" });
-});
+// router.get("/dashboard", isAuthenticated, (req, res) => {
+//   res.render("dashboard", { message: "Welcome to the Dashboard" });
+// });
 
 // Render the booking page
 router.get('/admin/booking', isAuthenticated, isAdmin, (req, res) => {
   res.render('booking');
 });
+
 
 // API to check room availability
 router.post('/admin/booking/check-availability', isAuthenticated,checkRoomAvailability);
@@ -72,7 +73,7 @@ router.get('/api/courses/:programId', async (req, res) => {
   }
 });
 
-router.get('/view', async (req, res) => {
+router.get('/view', isAuthenticated, isAdmin, async (req, res) => {
   try {
       await sequelize.authenticate();
       console.log('Database connected successfully!');

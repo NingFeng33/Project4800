@@ -226,6 +226,93 @@ exports.getAdminDashboard = async (req, res) => {
   }
 };
 
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({ include: Role });
+    res.render('users', { users });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+exports.getAddUser = (req, res) => {
+  res.render('addUser'); // Render a view for adding a new user
+};
+
+exports.postAddUser = async (req, res) => {
+  const { firstName, lastName, email, role, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const roleRecord = await Role.findOne({ where: { role_name: role } });
+    if (!roleRecord) {
+      return res.status(400).send("Invalid role specified");
+    }
+
+  try {
+    await User.create({ 
+      F_Name: firstName, 
+      L_Name: lastName, 
+      email, 
+      role_id: roleRecord.role_id, 
+      password: hashedPassword 
+    });
+    res.redirect('/admin/users');
+  } catch (error) {
+    console.error('Error adding user:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+exports.getEditUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByPk(id);
+    const roles = await Role.findAll();
+
+    if (!user) return res.status(404).send('User not found');
+    res.render('editUser', { user, roles });
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+exports.postEditUser = async (req, res) => {
+  //const { id } = req.params;
+  const { user_id, firstName, lastName, email, role } = req.body;
+  try {
+    await User.update(
+      { F_Name: firstName, L_Name: lastName, email, role_id: role },
+      { where: { user_id } }
+  );
+    res.redirect('/admin/users');
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+exports.deactivateUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await User.update({ active: false }, { where: { user_id: id } });
+    res.redirect('/admin/users');
+  } catch (error) {
+    console.error('Error deactivating user:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    await User.destroy({ where: { user_id: userId } });
+    res.redirect('/admin/users'); 
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).send('Server Error');
+  }
+};
 
 // Dashboard
 // exports.getDashboard = (_req, res) => {
