@@ -243,3 +243,46 @@ function closeModal() {
     document.getElementById("edit-modal").style.display = "none";
     document.getElementById("modal-backdrop").style.display = "none";
 }
+
+document.getElementById("editForm").onsubmit = async function (event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const id = formData.get("id");
+    const type = document.getElementById("editType").textContent.toLowerCase();
+    const url = `/admin/${type}s/${id}/edit`;
+
+    const data = {
+        codeOrNumber: formData.get("codeOrNumber"),
+        nameOrCapacity: formData.get("nameOrCapacity"),
+        program: type === 'course' ? formData.get("program") : undefined
+    };
+
+    // Client-side debug logs
+    console.log("Submitting edit form");
+    console.log("ID:", id);
+    console.log("Type:", type);
+    console.log("URL:", url);
+    console.log("Data to send:", data);
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            alert(`${type.charAt(0).toUpperCase() + type.slice(1)} updated successfully`);
+            closeModal();
+            window.location.reload(); // Reload the page to show updated data
+        } else {
+            console.error(`Failed to update ${type}. Status: ${response.status}`);
+            alert(`Failed to update ${type}`);
+        }
+    } catch (error) {
+        console.error('Error updating:', error);
+        alert('An error occurred. Please try again.');
+    }
+};
+
