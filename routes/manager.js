@@ -46,7 +46,7 @@ router.post('/courses', async (req, res) => {
         end_date: endDate,
       });
   
-      res.redirect('/manager');
+      res.redirect('/admin/manager');
     } catch (error) {
       console.error('Failed to add course:', error);
       res.status(500).json({ error: 'Failed to add course due to a server error.' });
@@ -73,7 +73,7 @@ router.post('/rooms', async (req, res) => {
         room_number: roomNumber,
         capacity: capacity  
       });
-      res.redirect('/');
+      res.redirect('/admin/manager');
     } catch (error) {
       console.error('Failed to add room:', error);
       res.status(500).json({ error: 'Failed to add room due to server error.' });
