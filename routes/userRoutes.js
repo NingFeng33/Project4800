@@ -15,8 +15,8 @@ const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
 router.get('/users', getAllUsers);
 router.get('/users/new',getAddUser);
 router.post('/users/new', postAddUser);
-router.get('/users/edit/:id', getEditUser);
-router.post('/users/edit/:id', postEditUser);
+router.get('/users/edit/', getEditUser);
+router.post('/users/edit/', postEditUser);
 router.post('/users/deactivate/:id', deactivateUser);
 router.post('/users/:id/delete', deleteUser);
 

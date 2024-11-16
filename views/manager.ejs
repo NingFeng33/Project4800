@@ -80,7 +80,10 @@
             <td>
               <button onclick="openEditModal('course', '<%= course.course_id %>', '<%= course.course_code %>', 
               '<%= course.course_name %>', '<%= course.Program ? course.Program.program_name : ',' %>')">Edit</button>
-              <button onclick="deleteCourse(course.course_id)">Delete</button>
+              <form action="/admin/courses/<%= course.course_id %>/delete" method="POST" style="display:inline;"
+                  onsubmit="return confirmDelete('course')">
+                <button type="submit">Delete</button>
+              </form>
           </td>          
           </tr>
         <% }) %>
@@ -106,7 +109,9 @@
             <td><%= room.capacity %></td>
             <td>
               <button onclick="openEditModal('room', '<%= room.room_id %>', '<%= room.room_number %>', '<%= room.capacity %>')">Edit</button>
-              <button onclick="deleteRoom(room.room_id)">Delete</button>
+              <form action="/admin/rooms/<%= room.room_id %>/delete" method="POST" style="display:inline;" onsubmit="return confirmDelete('room')">
+                <button type="submit">Delete</button>
+              </form>
           </td>          
           </tr>
         <% }) %>

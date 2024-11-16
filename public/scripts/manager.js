@@ -286,3 +286,23 @@ document.getElementById("editForm").onsubmit = async function (event) {
     }
 };
 
+function confirmDelete(itemType) {
+    return confirm(`Are you sure you want to delete this ${itemType}? This action cannot be undone.`);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    function toVancouverTime(utcDateStr) {
+        const date = new Date(utcDateStr);
+        return date.toLocaleString('en-US', { 
+            timeZone: 'America/Vancouver', 
+            hour: 'numeric', 
+            minute: 'numeric', 
+            hour12: true 
+        });
+    }
+
+    document.querySelectorAll(".schedule-time").forEach(el => {
+        const utcTime = el.dataset.utc; 
+        el.textContent = toVancouverTime(utcTime); 
+    });
+});

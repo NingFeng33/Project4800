@@ -57,7 +57,7 @@ router.post('/courses', async (req, res) => {
 router.post('/courses/:id/delete', async (req, res) => {
   try {
       await Course.destroy({ where: { course_id: req.params.id } });
-      res.redirect('/manager'); 
+      res.redirect('/admin/manager'); 
   } catch (error) {
       console.error('Error deleting course:', error);
       res.status(500).send('Error deleting course');
@@ -84,7 +84,7 @@ router.post('/rooms', async (req, res) => {
 router.post('/rooms/:id/delete', async (req, res) => {
     try {
         await Room.destroy({ where: { room_id: req.params.id } });
-        res.redirect('/manager'); 
+        res.redirect('/admin/manager'); 
     } catch (error) {
         console.error('Error deleting room:', error);
         res.status(500).send('Error deleting room');

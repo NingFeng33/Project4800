@@ -29,8 +29,10 @@
                         <% bookings.forEach(booking => { %>
                             <li>
                                 <strong>Course:</strong> <%= booking.Course.course_name %> <br>
-                                <strong>Time:</strong> <%= new Date(booking.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %> - 
-                                <%= new Date(booking.end_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %> <br>
+                                <strong>Time:</strong> <%= new Date(booking.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit',
+                                 timeZone: 'America/Vancouver' }) %> - 
+                                <%= new Date(booking.end_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit',
+                                 timeZone: 'America/Vancouver' }) %> <br>
                                 <strong>Room:</strong> <%= booking.Room.room_number %>
                             </li>
                         <% }) %>
@@ -63,10 +65,10 @@
                                     <strong>Course:</strong> <%= booking.Course.course_name %><br>
                                     <strong>Time:</strong>
                                     <%= new Date(booking.start_time).toLocaleString('en-US', { 
-                                        hour: 'numeric', minute: 'numeric', hour12: true 
+                                        hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'America/Vancouver' 
                                     }) %> - 
                                     <%= new Date(booking.end_time).toLocaleString('en-US', { 
-                                        hour: 'numeric', minute: 'numeric', hour12: true 
+                                        hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'America/Vancouver' 
                                     }) %><br>
                                     <strong>Date:</strong> 
                                     <%= new Date(booking.booking_date).toLocaleDateString('en-US') %><br>
