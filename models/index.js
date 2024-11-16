@@ -17,7 +17,7 @@ Course.hasMany(Booking, { foreignKey: 'course_id', as: 'Bookings' });
 Booking.belongsTo(Course, { foreignKey: 'course_id' });
 
 Program.hasMany(Course, { foreignKey: 'program_id', as: 'Courses' });
-Course.belongsTo(Program, { foreignKey: 'program_id', as: 'Program' });
+Course.belongsTo(Program, { foreignKey: 'program_id',  as: 'Program' });
 
 module.exports = {
   User,

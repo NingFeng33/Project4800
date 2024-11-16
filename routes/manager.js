@@ -7,7 +7,7 @@ router.get('/manager', async (req, res) => {
     try {
         const courses = await Course.findAll({
             include: [{ model: Program,
-                        as: 'Programs'
+                        as: 'Program'
              }],
           });
       const rooms = await Room.findAll();
