@@ -11,6 +11,7 @@ const authRoutes = require("./routes/auth");
 const manager = require('./routes/manager');
 const factuly = require('./routes/facultyRoutes');
 const userRoutes = require('./routes/userRoutes');
+const dataRoutes = require('./routes/dataRoutes');
 const app = express();
 const { isAuthenticated, isAdmin } = require('./middleware/authMiddleware');
 
@@ -38,13 +39,15 @@ app.use(
     secret: process.env.SESSION_SECRET || "secret",
     store: sessionStore,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { maxAge: 60 * 60 * 1000 }, // 1 hour
   })
 );
 
 sessionStore.sync();
 
+app.use('/', manager);
+app.use('/api', dataRoutes);
 app.use(authRoutes);
 app.use(express.static('public'));
 

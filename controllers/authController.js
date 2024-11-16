@@ -1,10 +1,4 @@
-
-const { User} = require("../models/user");
-const { Role } = require("../models/role");
-const { Room } = require('../models/room');
-const { Booking } = require('../models/booking');
-const { Course } = require('../models/course');
-const { sequelize } = require('../config/db');
+const { User, Role, Room, Booking, Course, sequelize } = require("../models");
 //const sequelize = require("../config/db");
 const bcrypt = require("bcrypt");
 const { Op } = require('sequelize');
@@ -17,12 +11,12 @@ exports.getLogin = (_req, res) => {
 
 exports.postLogin = async (req, res) => {
   const { email, password } = req.body;
-  
+
   try {
     const user = await User.findOne({
       where: { email },
       include: [{
-        model: Role,
+        model: Role,  // Include Role model to get role_name
         attributes: ['role_name']
       }]
     });
@@ -36,12 +30,11 @@ exports.postLogin = async (req, res) => {
       return res.render("login", { message: "Invalid email or password." });
     }
 
-    // Assume the Role model is correctly defined and linked
-    const roleName = user.Role.role_name;  // Adjust according to actual model linkage
+    // Retrieve role name from the Role association
+    const roleName = user.Role ? user.Role.role_name : null;
 
     req.session.userId = user.user_id;
-    req.session.role = roleName;  // Store the role name for easier checks
-    req.session.firstName = user.F_Name;
+    req.session.role = roleName;
 
     req.session.save(() => {
       switch(roleName) {
@@ -56,10 +49,8 @@ exports.postLogin = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(error);
-    res.render("login", {
-      message: "An error occurred. Please try again."
-    });
+    console.error("Error during login:", error);
+    res.render("login", { message: "An error occurred. Please try again." });
   }
 };
 
@@ -123,66 +114,46 @@ exports.logout = (req, res) => {
   });
 };
 
+// Check room availability
 exports.checkRoomAvailability = async (req, res) => {
   const { date, endDate, startTime, endTime, courseId } = req.body;
-  console.log('Received data:', { date, endDate, startTime, endTime, courseId });
 
   if (!date || !endDate || !startTime || !endTime || !courseId) {
-      console.error('Missing one or more required fields.');
-      return res.status(400).json({ success: false, message: 'Missing one or more required fields.' });
+    console.error("Missing one or more required fields.");
+    return res.status(400).json({ success: false, message: "Missing one or more required fields." });
   }
 
   try {
-      const availableRooms = await Room.findAvailableRooms(date, endDate, startTime, endTime, courseId);
-      res.json({ success: true, availableRooms });
+    const availableRooms = await Room.findAvailableRooms(date, endDate, startTime, endTime, courseId);
+    res.json({ success: true, availableRooms });
   } catch (error) {
-      console.error('Error checking room availability:', error);
-      res.status(500).send('Error checking room availability');
+    console.error("Error checking room availability:", error);
+    res.status(500).json({ success: false, message: "Error checking room availability" });
   }
 };
 
+// Book a room
 exports.bookRoom = async (req, res) => {
   const { roomId, date, endDate, startTime, endTime, courseId } = req.body;
-  console.log('Received booking data:', { roomId, date, endDate, startTime, endTime, courseId });
-  // Convert date and time to proper datetime format
+
   const formattedStartTime = `${date} ${startTime}:00`;
   const formattedEndTime = `${endDate} ${endTime}:00`;
-  console.log('Formatted date and time:', formattedStartTime, formattedEndTime);
-  // try {
-  //     const newBooking = await Booking.create({
-  //         room_id: roomId,
-  //         course_id: courseId,
-  //         start_time: formattedStartTime, // 'YYYY-MM-DD HH:MM:SS'
-  //         end_time: formattedEndTime,     // 'YYYY-MM-DD HH:MM:SS'
-  //         booking_date: date,
-  //         end_date: endDate,
-  //         booking_status: 'booked'
-  //     });
-  //     res.json({ success: true, message: 'Room booked successfully', bookingId: newBooking.book_id });
-  // } 
-  const insertQuery = `
-  INSERT INTO Room_Booking
-  (room_id, course_id, start_time, end_time, booking_date, end_date, booking_status)
-  VALUES (?, ?, ?, ?, ?, ?, ?);
-`;
 
-try {
-  await sequelize.query(insertQuery, {
-    replacements: [
-      roomId,
-      courseId,
-      formattedStartTime, // Already formatted as 'YYYY-MM-DD HH:MM:SS'
-      formattedEndTime,   // Already formatted as 'YYYY-MM-DD HH:MM:SS'
-      date,
-      endDate,
-      'booked'
-    ],
-    type: sequelize.QueryTypes.INSERT
-  });
-  res.json({ success: true, message: 'Room booked successfully' });
-} catch (error) {
-      console.error('Error booking room:', error);
-      res.status(500).send('Error booking room');
+  const insertQuery = `
+    INSERT INTO Room_Booking
+    (room_id, course_id, start_time, end_time, booking_date, end_date, booking_status)
+    VALUES (?, ?, ?, ?, ?, ?, ?);
+  `;
+
+  try {
+    await sequelize.query(insertQuery, {
+      replacements: [roomId, courseId, formattedStartTime, formattedEndTime, date, endDate, 'booked'],
+      type: sequelize.QueryTypes.INSERT
+    });
+    res.json({ success: true, message: "Room booked successfully" });
+  } catch (error) {
+    console.error("Error booking room:", error);
+    res.status(500).json({ success: false, message: "Error booking room" });
   }
 };
 
@@ -278,11 +249,11 @@ exports.getEditUser = async (req, res) => {
 };
 
 exports.postEditUser = async (req, res) => {
-  //const { id } = req.params;
-  const { user_id, firstName, lastName, email, role } = req.body;
+  const { user_id, firstName, lastName, email } = req.body;
+  const roleId = Role === "Admin" ? 1 : 2; 
   try {
     await User.update(
-      { F_Name: firstName, L_Name: lastName, email, role_id: role },
+      { F_Name: firstName, L_Name: lastName, email, role_id: parseInt(roleId) },
       { where: { user_id } }
   );
     res.redirect('/admin/users');

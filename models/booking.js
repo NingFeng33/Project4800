@@ -52,4 +52,4 @@ const Booking = sequelize.define(
     }
 );
 
-module.exports = {Booking};
+module.exports = Booking;

@@ -1,18 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { Course } = require('../models/course');
-const { Room } = require('../models/room');
-const { Program } = require('../models/program');
-const { Booking } = require('../models/booking');
+const { Course, Program, Room } = require('../models');
 
 // GET: manager page showing courses and rooms
 router.get('/manager', async (req, res) => {
     try {
         const courses = await Course.findAll({
-            include: [Program],
+            include: [{ model: Program,
+                        as: 'Programs'
+             }],
           });
       const rooms = await Room.findAll();
-      const programs = await Program.findAll();
+      const programs = await Program.findAll({
+        include: [
+          {
+            model: Course,
+            as: 'Courses'
+          }
+        ]
+      });
   
       res.render('manager', { courses, rooms, programs, showModal: false, editData: null });
     } catch (error) {

@@ -57,7 +57,8 @@ async function checkAvailability() {
     const startTime = document.getElementById('startTimeInput').value;
     const endTime = document.getElementById('endTimeInput').value;
     console.log('Checking availability:', programId, courseId, date, endDate, startTime, endTime);
-    if (!programId || !courseId || !date|| !endDate || !startTime || !endTime) {
+
+    if (!programId || !courseId || !date || !endDate || !startTime || !endTime) {
         alert('Please fill all fields!');
         return;
     }
@@ -65,12 +66,21 @@ async function checkAvailability() {
     try {
         const response = await fetch('/admin/booking/check-availability', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ date, endDate, startTime, endTime, courseId })
         });
 
-        const result = await response.json();
+        // 응답 상태 확인
+        if (!response.ok) { // 응답이 성공적이지 않을 경우
+            const errorText = await response.text(); // 에러 내용을 텍스트로 확인
+            console.error('Failed to check availability:', errorText); // 에러 메시지 출력
+            alert('Server error: ' + errorText);
+            return; // 함수 종료
+        }
+
+        const result = await response.json(); // 응답을 JSON으로 변환
         console.log('Availability result:', result);
+
         if (result.success) {
             displayAvailableRooms(result.availableRooms);
         } else {
@@ -83,59 +93,73 @@ async function checkAvailability() {
     }
 }
 
+
 function displayAvailableRooms(rooms) {
-    const roomsList = document.getElementById('availableRooms');
-    roomsList.innerHTML = ''; // Clear previous entries
+    const roomsTableBody = document.getElementById('availableRooms').getElementsByTagName('tbody')[0];
+    roomsTableBody.innerHTML = ''; // Clear previous entries
 
     if (rooms.length === 0) {
-        roomsList.innerHTML = '<p>No available rooms found for the selected times.</p>';
+        roomsTableBody.innerHTML = '<tr><td colspan="3">No available rooms found for the selected times.</td></tr>';
         return;
     }
 
-    const list = document.createElement('ul');
     rooms.forEach(room => {
-        const roomElement = document.createElement('li');
-        roomElement.textContent = `Room Number: ${room.room_number}, Capacity: ${room.capacity}`;
-        
-        // Create a radio button for each room to allow selection
+        const row = document.createElement('tr');
+        const roomNumberCell = document.createElement('td');
+        roomNumberCell.textContent = room.room_number;
+
+        const capacityCell = document.createElement('td');
+        capacityCell.textContent = room.capacity;
+
+        const selectCell = document.createElement('td');
         const radioButton = document.createElement('input');
         radioButton.type = 'radio';
         radioButton.name = 'selectedRoom';
         radioButton.value = room.room_id;
 
-        // Append radio button and room details to the list item
-        roomElement.appendChild(radioButton);
-        list.appendChild(roomElement);
+        selectCell.appendChild(radioButton);
+        
+        // Append cells to the row
+        row.appendChild(roomNumberCell);
+        row.appendChild(capacityCell);
+        row.appendChild(selectCell);
+        
+        // Append row to the table body
+        roomsTableBody.appendChild(row);
     });
-    roomsList.appendChild(list);
 
     // Optionally, add a submit button if not already part of the form
     const submitButton = document.createElement('button');
     submitButton.textContent = 'Book Selected Room';
-    submitButton.type = 'button'; // Change this to 'submit' if part of a form
+    submitButton.type = 'button';
     submitButton.onclick = function() {
-        // Function to handle booking the selected room
-        bookRoom();
+        bookRoom(); // Ensure this function fetches the selected radio button value
     };
-    roomsList.appendChild(submitButton);
+
+    // Append the submit button after the table but within the same container
+    const container = roomsTableBody.parentElement; // The table's parent element
+    container.appendChild(submitButton);
 }
 
 function bookRoom() {
-    const selectedRoomId = document.querySelector('input[name="selectedRoom"]:checked').value;
+    const selectedRoom = document.querySelector('input[name="selectedRoom"]:checked');
+    if (!selectedRoom) {
+        alert('Please select a room to book.');
+        return;
+    }
+    const selectedRoomId = selectedRoom.value;
+
+    // Gather other form data
     const date = document.getElementById('dateInput').value;
     const endDate = document.getElementById('endDateInput').value;
     const startTime = document.getElementById('startTimeInput').value;
     const endTime = document.getElementById('endTimeInput').value;
     const courseId = document.getElementById('courseSelector').value;
-    if (!selectedRoomId) {
-        alert('Please select a room to book.');
-        return;
-    }
 
     // Send the booking request to the server
     fetch('/admin/booking/book-room', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             roomId: selectedRoomId,
             date: date,
@@ -147,9 +171,45 @@ function bookRoom() {
     })
     .then(response => response.json())
     .then(result => {
+        console.log(result); 
         if (result.success) {
             alert('Room booked successfully!');
-            // Optionally refresh the page or clear the form
+            document.getElementById('availableRooms').innerHTML = ''; 
+
+            // 방어 코드: room 객체와 room_number 확인
+            const roomNumber = result.room && result.room.room_number ? result.room.room_number : 'Unknown Room';
+
+            // Convert to ISO format for FullCalendar
+            const start = new Date(`${date}T${startTime}`).toISOString();
+            const end = new Date(`${endDate}T${endTime}`).toISOString();
+            
+            console.log("Adding event to calendar:", {
+                title: `Booked: ${roomNumber}`,
+                start: start,
+                end: end
+            });
+
+            
+            const waitForCalendar = setInterval(() => {
+                if (window.calendar && typeof window.calendar.addEvent === 'function') {
+                    // Add the new booking directly to the calendar
+                    window.calendar.addEvent({
+                        title: `Booked: ${roomNumber}`,
+                        start: start,
+                        end: end,
+                        extendedProps: {
+                            roomId: selectedRoomId,
+                            courseId: courseId
+                        }
+                    });
+                    clearInterval(waitForCalendar);
+                    
+                    
+                    window.calendar.render();
+                    window.calendar.refetchEvents();
+                }
+            }, 100); 
+
         } else {
             alert('Failed to book the room: ' + result.message);
         }

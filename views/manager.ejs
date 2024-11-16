@@ -76,7 +76,7 @@
           <tr>
             <td><%= course.course_code %></td>
             <td><%= course.course_name %></td>
-            <td><%= course.Program ? course.Program.program_name : 'N/A' %></td>
+            <td><%= course.Programs ? course.Programs.program_name : 'N/A' %></td>
             <td>
               <button onclick="openEditModal('course', '<%= course.course_id %>', '<%= course.course_code %>', 
               '<%= course.course_name %>', '<%= course.Program ? course.Program.program_name : ',' %>')">Edit</button>

@@ -7,8 +7,7 @@ const initializeDatabase = require('./config/db');
 const dataRoutes = require('./routes/dataRoutes');
 const userRoutes = require('./routes/userRoutes');
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize(process.env.DB_CONNECTION_STRING); // Adjust with your DB credentials
-const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
+const sequelize = new Sequelize(process.env.DB_CONNECTION_STRING); 
 
 const models = {
   Role: require('./role')(sequelize, Sequelize.DataTypes),

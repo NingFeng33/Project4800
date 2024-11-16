@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Course } = require('../models/course');
-const { Program } = require('../models/program');
+const { Course, Program } = require('../models');
 
 router.get('/faculty', async (req, res) => {
     try {

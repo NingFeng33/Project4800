@@ -1,5 +1,3 @@
-const {DataTypes, Op} = require('sequelize');
-const { sequelize } = require('../config/db');
 const express = require("express");
 const { isAuthenticated , isAdmin } = require("../middleware/authMiddleware");
 const {
@@ -12,8 +10,7 @@ const {
   checkRoomAvailability,
   bookRoom
 } = require("../controllers/authController");
-const { Program } = require('../models/program'); 
-const { Course } = require('../models/course');
+const { sequelize, Program, Course, User, Role, Room, Booking } = require('../models');
 const router = express.Router();
 
 router.get("/", getLogin);
@@ -31,20 +28,13 @@ router.get("/faculty/dashboard", isAuthenticated, (req, res) => {
   res.render("dashboard", { message: "Welcome to the Faculty Dashboard" });
 });
 
-// router.get("/dashboard", isAuthenticated, (req, res) => {
-//   res.render("dashboard", { message: "Welcome to the Dashboard" });
-// });
-
 // Render the booking page
 router.get('/admin/booking', isAuthenticated, isAdmin, (req, res) => {
   res.render('booking');
 });
 
-
 // API to check room availability
 router.post('/admin/booking/check-availability', isAuthenticated,checkRoomAvailability);
-//router.post('/booking/check-availability', checkRoomAvailability);
-// API to book a room
 router.post('/admin/booking/book-room', isAuthenticated,bookRoom);
 
 
@@ -64,7 +54,7 @@ router.get('/api/courses/:programId', async (req, res) => {
   try {
       const programId = req.params.programId;
       const courses = await Course.findAll({
-          where: { program_id: programId }
+          where: { program_id: programId },
       });
       res.json(courses);
   } catch (error) {
@@ -78,7 +68,7 @@ router.get('/view', isAuthenticated, isAdmin, async (req, res) => {
       await sequelize.authenticate();
       console.log('Database connected successfully!');
 
-      const programs = await Program.findAll();
+      const programs = await Program.findAll({});
       const courses = await Course.findAll();
 
       console.log('Programs:', programs);
