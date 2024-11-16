@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "- git clone https://github.com/NingFeng33/Project4800.git - cd Project4800 - npm init -y - npm install express mysql2 dotenv",
   "main": "app.js",
-
   "scripts": {
+    "start": "node app.js",
+    "test": "jest"
     "start": "node app.js",
     "test": "jest"
   },
@@ -12,6 +13,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "connect-session-sequelize": "^7.1.7",
+    "date-fns-tz": "^3.2.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
