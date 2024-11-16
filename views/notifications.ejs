@@ -1,4 +1,3 @@
-<!-- views/notifications.ejs -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,51 +8,64 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
       rel="stylesheet"
     />
+    <!-- Include any additional CSS -->
+    <link rel="stylesheet" href="/css/styles.css" />
   </head>
   <body>
-    <h1>Your Notifications</h1>
-    <ul id="notificationList"></ul>
+    <!-- Include your top bar and sidebar if applicable -->
+    <%- include('partials/top_bar') %> <%- include('partials/side_bar') %>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <h1>Your Notifications</h1>
+      <ul id="notificationList">
+        <% notifications.forEach(function(notif) { %>
+        <li class="<%= notif.is_read ? '' : 'unread' %>">
+          <%= notif.message %> <% if (!notif.is_read) { %>
+          <form
+            action="/notifications/<%= notif.notification_id %>/read"
+            method="post"
+            style="display: inline"
+          >
+            <button type="submit">Mark as Read</button>
+          </form>
+          <% } %>
+        </li>
+        <% }); %>
+      </ul>
+    </main>
 
     <!-- Include jQuery and Toastr JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
+    <!-- Socket.IO client library -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- Custom script -->
     <script>
       $(document).ready(function () {
-        // Fetch notifications
-        fetch("/notifications")
-          .then((response) => response.json())
-          .then((notifications) => {
-            notifications.forEach((notif) => {
-              const li = $("<li>").text(
-                `${notif.message} (${new Date(
-                  notif.created_at
-                ).toLocaleString()})`
-              );
-              if (!notif.is_read) {
-                li.addClass("unread");
-                const markReadBtn = $("<button>")
-                  .text("Mark as Read")
-                  .click(() => {
-                    fetch(`/notifications/${notif.notification_id}/read`, {
-                      method: "POST",
-                    }).then(() => {
-                      li.removeClass("unread");
-                      markReadBtn.remove();
-                    });
-                  });
-                li.append(markReadBtn);
-              }
-              $("#notificationList").append(li);
-            });
-          });
+        // Additional functionality if needed
       });
     </script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/scripts/socket.js"></script>
+
     <style>
+      /* Custom styles */
       .unread {
         font-weight: bold;
+      }
+
+      #notificationList {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      #notificationList li {
+        margin-bottom: 10px;
+      }
+
+      #notificationList button {
+        margin-left: 10px;
       }
     </style>
   </body>

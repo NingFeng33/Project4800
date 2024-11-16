@@ -1,4 +1,3 @@
-// routes/resetRoutes.js
 const express = require("express");
 const { getReset, updatePassword } = require("../controllers/reset");
 const { isAuthenticated } = require("../middleware/auth");

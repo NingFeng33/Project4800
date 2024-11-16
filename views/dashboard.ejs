@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
     <link rel="stylesheet" href="/css/dashboard.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <!-- Top Bar -->
@@ -42,18 +46,35 @@
           </div>
 
           <div class="card">
-            <h3>Notifications</h3>
+            <h3>Recent Notifications</h3>
+            <% if (notifications && notifications.length > 0) { %>
             <ul>
-              <li>Room 202 has a conflict at 2:00 PM.</li>
-              <li>New schedule added for Course D.</li>
+              <% notifications.forEach(function(notif) { %>
+              <li class="<%= notif.is_read ? 'read' : 'unread' %>">
+                <span><%= notif.message %></span>
+                <% if (!notif.is_read) { %>
+                <button
+                  class="mark-as-read-btn"
+                  data-id="<%= notif.notification_id %>"
+                >
+                  Mark as Read
+                </button>
+                <% } %>
+              </li>
+              <% }); %>
             </ul>
+            <% } else { %>
+            <p>No notifications.</p>
+            <% } %>
           </div>
         </section>
       </main>
     </div>
 
     <script src="/scripts/dashboard.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="/scripts/socket.js"></script>
   </body>
 </html>

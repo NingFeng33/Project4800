@@ -294,28 +294,13 @@ UPDATE courses SET length_week = 7, size = 34 WHERE course_id = 43;
 
 
 -- Create table for 'Notification'
-CREATE TABLE Notifications (
-    notification_id INT AUTO_INCREMENT PRIMARY KEY,
-    template_id INT,
-    parameters JSON,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (template_id) REFERENCES notificationTemplates(template_id)
-);
-
--- Create table for 'Notofication_users'
-CREATE TABLE NotificationUsers (
-    notification_id INT,
-    user_id INT,
-    is_read BOOLEAN DEFAULT FALSE,
-    PRIMARY KEY (notification_id, user_id),
-    FOREIGN KEY (notification_id) REFERENCES Notifications(notification_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
-);
-
--- Create table for 'Notification_template'
-CREATE TABLE NotificationTemplates (
-  template_id INT AUTO_INCREMENT PRIMARY KEY,
-  template_message TEXT NOT NULL,
-  description VARCHAR(255)
-);
-
+CREATE TABLE `Notifications` (
+  `notification_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `message` TEXT NOT NULL,
+  `type` ENUM('info', 'warning', 'success', 'error') NOT NULL DEFAULT 'info',
+  `is_read` TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`notification_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `User`(`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

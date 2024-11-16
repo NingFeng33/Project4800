@@ -1,4 +1,3 @@
-// models/Notification.js
 const { sequelize } = require("../config/db");
 const { DataTypes } = require("sequelize");
 
@@ -10,14 +9,28 @@ const Notification = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    template_id: {
+    user_id: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       references: {
-        model: "NotificationTemplates",
-        key: "template_id",
+        model: "User",
+        key: "user_id",
       },
     },
-    parameters: DataTypes.JSON,
+    message: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    type: {
+      // e.g., 'info', 'warning', 'success', 'error'
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "info",
+    },
+    is_read: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

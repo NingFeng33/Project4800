@@ -19,6 +19,8 @@ const notificationRoutes = require("./routes/notifications");
 const resetRoutes = require("./routes/reset");
 const calendarRoutes = require("./routes/view");
 const managerRoutes = require("./routes/manager");
+const userRoutes = require("./routes/user");
+const dashboardRoutes = require("./routes/dashboard");
 
 const app = express();
 const server = http.createServer(app);
@@ -57,9 +59,13 @@ app.use("/programs", programRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/reset", resetRoutes);
 app.use("/manager", managerRoutes);
+app.use("/user", userRoutes);
+app.use("/dashboard", dashboardRoutes);
 
 // Socket.IO connection handling
 io.on("connection", (socket) => {
+  console.log("A user connected");
+
   const userId = socket.handshake.query.userId;
   if (userId) {
     socket.join(`user_${userId}`);

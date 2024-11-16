@@ -1,15 +1,15 @@
-// const { sequelize } = require("../config/db");
 const Room = require("../models/room");
 const Booking = require("../models/booking");
 const Course = require("../models/course");
 const { Op } = require("sequelize");
+const { notifyStaffBooking, sendNotificationToAll } = require("./notification");
 
-// GET: render booking page
+// GET: renders booking page
 exports.renderBookingPage = async (_, res) => {
   res.render("booking");
 };
 
-// GET: get all bookings
+// GET: gets all bookings with associated room and course
 exports.getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.findAll({
@@ -24,51 +24,33 @@ exports.getAllBookings = async (req, res) => {
   }
 };
 
-//
+// POST: checks if rooms are available
 exports.checkRoomAvailability = async (req, res) => {
-  const { date, startTime, endTime } = req.body;
+  const { date, endDate, startTime, endTime, courseId } = req.body;
+  console.log("Received data:", {
+    date,
+    endDate,
+    startTime,
+    endTime,
+    courseId,
+  });
 
-  if (!date || !startTime || !endTime) {
+  if (!date || !endDate || !startTime || !endTime || !courseId) {
+    console.error("Missing one or more required fields.");
     return res.status(400).json({
       success: false,
-      message: "Date, start time, and end time are required.",
+      message: "Missing one or more required fields.",
     });
   }
 
   try {
-    const formattedStartTime = `${date} ${startTime}:00`;
-    const formattedEndTime = `${date} ${endTime}:00`;
-
-    const unavailableRooms = await Booking.findAll({
-      attributes: ["room_id"],
-      where: {
-        [Op.or]: [
-          {
-            start_time: {
-              [Op.between]: [formattedStartTime, formattedEndTime],
-            },
-          },
-          {
-            end_time: {
-              [Op.between]: [formattedStartTime, formattedEndTime],
-            },
-          },
-        ],
-      },
-    });
-
-    const unavailableRoomIds = unavailableRooms.map(
-      (booking) => booking.room_id
+    const availableRooms = await Room.findAvailableRooms(
+      date,
+      endDate,
+      startTime,
+      endTime,
+      courseId
     );
-
-    const availableRooms = await Room.findAll({
-      where: {
-        room_id: {
-          [Op.notIn]: unavailableRoomIds,
-        },
-      },
-    });
-
     res.json({ success: true, availableRooms });
   } catch (error) {
     console.error("Error checking room availability:", error);
@@ -88,9 +70,10 @@ exports.bookRoom = async (req, res) => {
   }
 
   const formattedStartTime = `${date} ${startTime}:00`;
-  const formattedEndTime = `${date} ${endTime}:00`;
+  const formattedEndTime = `${endDate} ${endTime}:00`;
 
   try {
+    // Create new booking
     const newBooking = await Booking.create({
       room_id: roomId,
       course_id: courseId,
@@ -100,6 +83,40 @@ exports.bookRoom = async (req, res) => {
       end_date: endDate,
       booking_status: "booked",
     });
+
+    // Fetch room and course details
+    const room = await Room.findByPk(roomId);
+    const course = await Course.findByPk(courseId);
+
+    // Format the start and end times for the notification message
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    const startTimeFormatted = new Date(formattedStartTime).toLocaleString(
+      "en-US",
+      options
+    );
+    const endTimeFormatted = new Date(formattedEndTime).toLocaleString(
+      "en-US",
+      options
+    );
+
+    // Get user ID from session
+    const userId = req.session.user.user_id;
+
+    // Get Socket.IO instance from app
+    const io = req.app.get("io");
+
+    // Prepare detailed notification message
+    const message = `A new booking for course ${course.course_name} in room ${room.room_number} has been confirmed from ${startTimeFormatted} to ${endTimeFormatted}.`;
+
+    // Send notification to the user
+    sendNotificationToAll(io, message, "/view");
 
     res.json({
       success: true,

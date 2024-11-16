@@ -6,7 +6,6 @@ const Program = require("../models/program");
 const Course = require("../models/course");
 
 // Render Calendar
-
 router.get("/", isAuthenticated, renderCalendar);
 
 // Add other routes for calendar functionality
