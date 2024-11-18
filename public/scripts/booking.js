@@ -24,6 +24,10 @@ async function loadPrograms() {
             option.textContent = program.program_name;
             programSelector.appendChild(option);
         });
+		const otherOption = document.createElement('option');
+        otherOption.value = "other";
+        otherOption.textContent = "Other";
+        programSelector.appendChild(otherOption);
     } catch (error) {
         console.error('Error loading programs:', error);
     }
@@ -33,6 +37,9 @@ async function loadCourses(programId) {
     const courseSelector = document.getElementById('courseSelector');
     //console.log('Loading courses for program:', programId);
     courseSelector.innerHTML = '<option value="">Select a Course</option>'; // Reset dropdown
+	if (programId === "other") {
+        return;
+    }
     if (!programId) return;  // Exit if no programId is selected
 
     try {
@@ -58,16 +65,20 @@ async function checkAvailability() {
     const endTime = document.getElementById('endTimeInput').value;
     console.log('Checking availability:', programId, courseId, date, endDate, startTime, endTime);
 
-    if (!programId || !courseId || !date || !endDate || !startTime || !endTime) {
+    if (!programId || (!courseId && programId !== 'other') || !date || !endDate || !startTime || !endTime) {
         alert('Please fill all fields!');
         return;
+    }
+	const requestBody = { date, endDate, startTime, endTime };
+    if (courseId) {
+        requestBody.courseId = courseId;
     }
 
     try {
         const response = await fetch('/admin/booking/check-availability', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date, endDate, startTime, endTime, courseId })
+            body: JSON.stringify(requestBody)
         });
 
         // 응답 상태 확인
@@ -155,19 +166,21 @@ function bookRoom() {
     const startTime = document.getElementById('startTimeInput').value;
     const endTime = document.getElementById('endTimeInput').value;
     const courseId = document.getElementById('courseSelector').value;
-
+    const isOther = !courseId || courseId === 'other';
+    const url = isOther ? '/admin/rental/rental-room' : '/admin/booking/book-room';
+    const body = JSON.stringify({
+        roomId: selectedRoomId,
+        date: date,
+        endDate: endDate,
+        startTime: startTime,
+        endTime: endTime,
+        ...(isOther ? { purpose: "Special Use" } : { courseId: courseId })  // Add purpose for other bookings, courseId for course bookings
+    });
     // Send the booking request to the server
-    fetch('/admin/booking/book-room', {
+    fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            roomId: selectedRoomId,
-            date: date,
-            endDate: endDate,
-            startTime: startTime,
-            endTime: endTime,
-            courseId: courseId
-        })
+        body: body
     })
     .then(response => response.json())
     .then(result => {

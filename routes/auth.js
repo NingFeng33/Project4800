@@ -8,9 +8,10 @@ const {
   getAdminDashboard,
   logout,
   checkRoomAvailability,
-  bookRoom
+  bookRoom,
+  rentalRoom
 } = require("../controllers/authController");
-const { sequelize, Program, Course, User, Role, Room, Booking } = require('../models');
+const { sequelize, Program, Course, User, Role, Room, Booking, RoomRental } = require('../models');
 const router = express.Router();
 
 router.get("/", getLogin);
@@ -36,7 +37,7 @@ router.get('/admin/booking', isAuthenticated, isAdmin, (req, res) => {
 // API to check room availability
 router.post('/admin/booking/check-availability', isAuthenticated,checkRoomAvailability);
 router.post('/admin/booking/book-room', isAuthenticated,bookRoom);
-
+router.post('/admin/rental/rental-room', isAuthenticated,rentalRoom);
 
 // Fetch all programs - API route
 router.get('/api/programs', async (req, res) => {

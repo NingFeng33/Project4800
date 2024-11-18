@@ -1,4 +1,4 @@
-const { User, Role, Room, Booking, Course, sequelize } = require("../models");
+const { User, Role, Room, Booking, Course, RoomRental, sequelize } = require("../models");
 //const sequelize = require("../config/db");
 const bcrypt = require("bcrypt");
 const { Op } = require('sequelize');
@@ -156,6 +156,32 @@ exports.bookRoom = async (req, res) => {
     res.status(500).json({ success: false, message: "Error booking room" });
   }
 };
+
+exports.rentalRoom = async (req, res) => {
+  const { roomId, date, endDate, startTime, endTime, purpose } = req.body;
+  const formattedStartTime = `${date} ${startTime}:00`;
+  const formattedEndTime = `${endDate} ${endTime}:00`;
+
+  const renterName = null;  
+
+    const insertQuery = `
+        INSERT INTO Room_Rental
+        (room_id, renter_name, start_time, end_time, purpose)
+        VALUES (?, ?, ?, ?, ?);
+    `;
+
+    try {
+        await sequelize.query(insertQuery, {
+            replacements: [roomId, renterName, formattedStartTime, formattedEndTime, purpose],
+            type: sequelize.QueryTypes.INSERT
+        });
+        res.status(201).json({ success: true, message: "Room rental booked successfully" });
+    } catch (error) {
+        console.error("Error booking room rental:", error);
+        res.status(500).json({ success: false, message: "Error booking room rental" });
+    }
+}
+
 
 exports.getAdminDashboard = async (req, res) => {
   try {
