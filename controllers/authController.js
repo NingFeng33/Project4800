@@ -118,7 +118,7 @@ exports.logout = (req, res) => {
 exports.checkRoomAvailability = async (req, res) => {
   const { date, endDate, startTime, endTime, courseId } = req.body;
 
-  if (!date || !endDate || !startTime || !endTime || !courseId) {
+  if (!date || !endDate || !startTime || !endTime) {
     console.error("Missing one or more required fields.");
     return res.status(400).json({ success: false, message: "Missing one or more required fields." });
   }
