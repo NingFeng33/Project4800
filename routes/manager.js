@@ -240,6 +240,49 @@ router.post('/rooms/:id/edit', async (req, res) => {
   }
 });
 
+// Add a new program
+router.post('/programs', async (req, res) => {
+  const { programName } = req.body;
+  try {
+    await Program.create({ program_name: programName });
+    res.redirect('/admin/manager'); // Redirect back to the manager page
+  } catch (error) {
+    console.error('Failed to add program:', error);
+    res.status(500).json({ error: 'Failed to add program due to server error.' });
+  }
+});
+
+// Edit an existing program
+router.post('/programs/:id/edit', async (req, res) => {
+  try {
+      const { program_name } = req.body;
+      const programId = req.params.id;
+
+      await Program.update(
+          { program_name },
+          { where: { program_id: programId } }
+      );
+
+      res.redirect('/admin/manager'); 
+  } catch (error) {
+      console.error('Error updating program:', error);
+      res.status(500).send('Error updating program');
+  }
+});
+
+// Delete a program
+router.post('/programs/:id/delete', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await Program.destroy({ where: { program_id: id } });
+    res.redirect('/admin/manager'); // Redirect back to the manager page
+  } catch (error) {
+    console.error('Failed to delete program:', error);
+    res.status(500).json({ error: 'Failed to delete program due to server error.' });
+  }
+});
+
+
 
 
 module.exports = router;

@@ -109,7 +109,7 @@ function openEditModal(type, id, codeOrNumber, nameOrCapacity, programName = '')
 }
 
 // Close modal function
-function closeModal() {
+function closeProgramModal() {
     document.getElementById('edit-modal').style.display = 'none';
 }
 
@@ -306,3 +306,23 @@ document.addEventListener("DOMContentLoaded", function() {
         el.textContent = toVancouverTime(utcTime); 
     });
 });
+
+// Open the "Edit Program" Modal
+function openEditProgramModal(programId, programName) {
+    const modal = document.getElementById('editProgramModal');
+    const form = document.getElementById('editProgramForm');
+    
+    // Set the program ID and name in the form fields
+    document.getElementById('editProgramId').value = programId;
+    document.getElementById('editProgramName').value = programName;
+    
+    // Set the form action dynamically
+    form.action = `/admin/programs/${programId}/edit`;
+
+    // Display the modal
+    modal.style.display = 'block';
+}
+
+function closeProgramModal() {
+    document.getElementById('editProgramModal').style.display = 'none';
+}

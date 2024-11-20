@@ -37,6 +37,15 @@
         <button type="submit">Add Course</button>
       </form>
     </div>
+
+    <div class="form-section">
+      <h2>Add New Program</h2>
+      <form action="/admin/programs" method="POST">
+        <label for="programName">Program Name:</label>
+        <input type="text" name="programName" required>
+        <button type="submit">Add Program</button>
+      </form>
+    </div>    
   
     <div class="form-section">
       <h2>Add New Room</h2>
@@ -90,7 +99,30 @@
         <% }) %>
       </tbody>
     </table>
-  
+
+    <h2>Programs</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Program Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% programs.forEach(program => { %>
+          <tr>
+            <td><%= program.program_name %></td>
+            <td>
+              <button onclick="openEditProgramModal('<%= program.program_id %>', '<%= program.program_name %>')">Edit</button>
+                <form action="/admin/programs/<%= program.program_id %>/delete" method="POST" style="display: inline;" onsubmit="return confirmDelete('program')">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
     <h2>Rooms</h2>
     <div class="pagination" id="room-pagination">
       <button id="next-room" onclick="nextPageRoom()">Next</button>
@@ -141,6 +173,25 @@
           </form>
       </div>
     </div>    
+
+    <div id="editProgramModal" class="modal" style="display: none;">
+      <div class="modal-content">
+          <span onclick="closeProgramModal()" class="close-button">&times;</span>
+          <div class="modal-header">
+              <h3>Edit Program</h3>
+          </div>
+          <form id="editProgramForm" action="" method="POST">
+              <input type="hidden" name="program_id" id="editProgramId">
+              
+              <label for="editProgramName">Program Name:</label>
+              <input type="text" name="program_name" id="editProgramName" required>
+              
+              <button type="submit">Save Changes</button>
+          </form>
+      </div>
+    </div>
+  
+   
   
     <footer>
       <p>&copy; 2024 Course Scheduling System</p>
