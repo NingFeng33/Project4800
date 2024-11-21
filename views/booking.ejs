@@ -5,6 +5,9 @@
 </head>
 <body>
 <link rel="stylesheet" href="/css/booking.css"> <!-- Link to an external CSS for styling -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+
 <!-- Top Bar -->
 <%- include('partials/top_bar') %>
 <!-- Sidebar -->
@@ -34,11 +37,16 @@
       <label for="startTimeInput">Select Start Time:</label>
       <input type="time" id="startTimeInput" name="startTime">
     </div>
-    <div class="form-row">
+    <div class="users-dropdown>
       <label for="endDate">Select End Date:</label>
       <input type="date" id="endDateInput" name="endDate">
       <label for="endTimeInput">Select End Time:</label>
       <input type="time" id="endTimeInput" name="endTime">
+    </div>
+    <div class="form-row">
+      <label for="facultySelector">Assign Users:</label>
+        <select id="facultySelector" name="facultyIds[]" multiple style="width: 100%;">
+        </select>
     </div>
     <button type="button" id="checkAvailabilityButton">Check Availability</button>
     
@@ -60,5 +68,7 @@
 </main>
 
 <script src="/scripts/booking.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 </body>
 </html>

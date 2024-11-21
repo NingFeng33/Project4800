@@ -159,6 +159,7 @@ function bookRoom() {
         return;
     }
     const selectedRoomId = selectedRoom.value;
+    
 
     // Gather other form data
     const date = document.getElementById('dateInput').value;
@@ -167,6 +168,10 @@ function bookRoom() {
     const endTime = document.getElementById('endTimeInput').value;
     const courseId = document.getElementById('courseSelector').value;
     const isOther = !courseId || courseId === 'other';
+    // Get selected faculty users
+    const facultySelector = document.getElementById('facultySelector');
+    const selectedFacultyIds = Array.from(facultySelector.selectedOptions).map(option => option.value);
+    console.log("Selected Faculty IDs:", selectedFacultyIds); // Debugging 
     const url = isOther ? '/admin/rental/rental-room' : '/admin/booking/book-room';
     const body = JSON.stringify({
         roomId: selectedRoomId,
@@ -174,6 +179,7 @@ function bookRoom() {
         endDate: endDate,
         startTime: startTime,
         endTime: endTime,
+        facultyIds: selectedFacultyIds, // Include facultyIds
         ...(isOther ? { purpose: "Special Use" } : { courseId: courseId })  // Add purpose for other bookings, courseId for course bookings
     });
     // Send the booking request to the server
@@ -189,7 +195,6 @@ function bookRoom() {
             alert('Room booked successfully!');
             document.getElementById('availableRooms').innerHTML = ''; 
 
-            // 방어 코드: room 객체와 room_number 확인
             const roomNumber = result.room && result.room.room_number ? result.room.room_number : 'Unknown Room';
 
             // Convert to ISO format for FullCalendar
@@ -232,3 +237,49 @@ function bookRoom() {
         alert('Error booking the room');
     });
 }
+
+
+async function loadFacultyUsers() {
+    const facultySelector = document.getElementById('facultySelector');
+    try {
+        const response = await fetch('/api/facultyUsers'); // Adjust endpoint to your API
+        const users = await response.json();
+
+        // Clear any previous options
+        facultySelector.innerHTML = '';
+
+        // Populate the dropdown with users
+        users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.user_id; // Use user ID as the value
+            option.textContent = `${user.F_Name} ${user.L_Name}`; // Full name as text
+            facultySelector.appendChild(option);
+        });
+
+        // Optional: Add an "Other" option
+        const otherOption = document.createElement('option');
+        otherOption.value = "other";
+        otherOption.textContent = "Other";
+        facultySelector.appendChild(otherOption);
+
+        $('#facultySelector').select2({
+            placeholder: 'Select Faculty Users',
+            allowClear: true,
+        });
+    } catch (error) {
+        console.error('Error loading faculty users:', error);
+    }
+}
+
+function getSelectedFacultyUsers() {
+    const facultyList = document.getElementById('facultyList');
+    const selectedUsers = Array.from(facultyList.children).map(item => ({
+        user_id: item.dataset.userId,
+        name: item.textContent
+    }));
+    console.log('Selected Faculty Users:', selectedUsers);
+    return selectedUsers;
+}
+
+document.addEventListener('DOMContentLoaded', loadFacultyUsers);
+
