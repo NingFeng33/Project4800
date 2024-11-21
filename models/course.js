@@ -64,4 +64,3 @@ const Course = sequelize.define(
 );
 
 module.exports = Course;
-

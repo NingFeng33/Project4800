@@ -2,7 +2,8 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 const Room = require('./room');
 
-const RoomRental = sequelize.define('RoomRental', {
+const RoomRental = sequelize.define('RoomRental', 
+  {
   rental_id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -26,7 +27,12 @@ const RoomRental = sequelize.define('RoomRental', {
       model: Room,
       key: 'room_id',
     },
+  }
   },
-});
+  {
+    tableName: "Room_Rental",
+    timestamps: false
+  }
+);
 
 module.exports = RoomRental;

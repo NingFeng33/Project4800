@@ -1,7 +1,9 @@
-const { User, Role, Room, Booking, Course, sequelize } = require("../models");
+const { User, Role, Room, Booking, Course, RoomRental, sequelize } = require("../models");
 //const sequelize = require("../config/db");
 const bcrypt = require("bcrypt");
 const { Op } = require('sequelize');
+const { toZonedTime, format } = require('date-fns-tz');
+const moment = require("moment-timezone");
 
 console.log(Room);
 // Login
@@ -118,7 +120,7 @@ exports.logout = (req, res) => {
 exports.checkRoomAvailability = async (req, res) => {
   const { date, endDate, startTime, endTime, courseId } = req.body;
 
-  if (!date || !endDate || !startTime || !endTime || !courseId) {
+  if (!date || !endDate || !startTime || !endTime) {
     console.error("Missing one or more required fields.");
     return res.status(400).json({ success: false, message: "Missing one or more required fields." });
   }
@@ -136,8 +138,13 @@ exports.checkRoomAvailability = async (req, res) => {
 exports.bookRoom = async (req, res) => {
   const { roomId, date, endDate, startTime, endTime, courseId } = req.body;
 
-  const formattedStartTime = `${date} ${startTime}:00`;
-  const formattedEndTime = `${endDate} ${endTime}:00`;
+  // Combine date and time into a single string
+  const formattedStartTimePST = `${date} ${startTime}:00`;
+  const formattedEndTimePST = `${endDate} ${endTime}:00`;
+
+  // Convert PST time to UTC using moment-timezone
+  const formattedStartTimeUTC = moment.tz(formattedStartTimePST, 'America/Vancouver').utc().format('YYYY-MM-DD HH:mm:ss');
+  const formattedEndTimeUTC = moment.tz(formattedEndTimePST, 'America/Vancouver').utc().format('YYYY-MM-DD HH:mm:ss');
 
   const insertQuery = `
     INSERT INTO Room_Booking
@@ -147,7 +154,7 @@ exports.bookRoom = async (req, res) => {
 
   try {
     await sequelize.query(insertQuery, {
-      replacements: [roomId, courseId, formattedStartTime, formattedEndTime, date, endDate, 'booked'],
+      replacements: [roomId, courseId, formattedStartTimeUTC, formattedEndTimeUTC, date, endDate, 'booked'],
       type: sequelize.QueryTypes.INSERT
     });
     res.json({ success: true, message: "Room booked successfully" });
@@ -157,21 +164,62 @@ exports.bookRoom = async (req, res) => {
   }
 };
 
+exports.rentalRoom = async (req, res) => {
+  const { roomId, date, endDate, startTime, endTime, purpose } = req.body;
+  const formattedStartTime = `${date} ${startTime}:00`;
+  const formattedEndTime = `${endDate} ${endTime}:00`;
+
+  const renterName = null;  
+
+    const insertQuery = `
+        INSERT INTO Room_Rental
+        (room_id, renter_name, start_time, end_time, purpose)
+        VALUES (?, ?, ?, ?, ?);
+    `;
+
+    try {
+        await sequelize.query(insertQuery, {
+            replacements: [roomId, renterName, formattedStartTime, formattedEndTime, purpose],
+            type: sequelize.QueryTypes.INSERT
+        });
+        res.status(201).json({ success: true, message: "Room rental booked successfully" });
+    } catch (error) {
+        console.error("Error booking room rental:", error);
+        res.status(500).json({ success: false, message: "Error booking room rental" });
+    }
+}
+
+
 exports.getAdminDashboard = async (req, res) => {
   try {
-    const today = new Date().toISOString().slice(0, 10); // Format today's date
-    console.log("Today's date:", today); 
+  
+  const today = moment().tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss A');
+  console.log("Current time in Vancouver timezone:", today);
 
     // Fetch today's bookings
     const todayBookings = await Booking.findAll({
-      where: { booking_date: today },
+      //where: { booking_date: formattedDate },
       include: [
-        { model: Course, attributes: ['course_name'] },
+        { model: Course, attributes: ['course_name', 'course_code'] },
         { model: Room, attributes: ['room_number'] }
       ]
     });
 
-    console.log("Bookings for today:", todayBookings);
+      const convertedBookings = todayBookings.map(booking => {
+      const startTime = moment.tz(booking.start_time, 'UTC').tz('America/Vancouver');
+      const endTime = moment.tz(booking.end_time, 'UTC').tz('America/Vancouver');
+
+      console.log("Start Time in Vancouver:", startTime.format('YYYY-MM-DD hh:mm:ss A'));
+      console.log("End Time in Vancouver:", endTime.format('YYYY-MM-DD hh:mm:ss A'));
+      return {
+        ...booking.dataValues,
+        displayStartTime: startTime.format('YYYY-MM-DD hh:mm A'),
+        displayEndTime: endTime.format('YYYY-MM-DD hh:mm A')
+      };
+    });
+
+    
+    console.log("Bookings for today:", convertedBookings);
 
     // Fetch future bookings
     const futureBookings = await Booking.findAll({
@@ -181,7 +229,7 @@ exports.getAdminDashboard = async (req, res) => {
         }
       },
       include: [
-        { model: Course, attributes: ['course_name'] },
+        { model: Course, attributes: ['course_name', 'course_code'] },
         { model: Room, attributes: ['room_number'] }
       ],
       order: [['booking_date', 'ASC'], ['start_time', 'ASC']] // Order by date and time
@@ -190,7 +238,7 @@ exports.getAdminDashboard = async (req, res) => {
     console.log("Future bookings:", futureBookings);
 
     // Render dashboard with both today's bookings and future bookings
-    res.render('dashboard', { bookings: todayBookings, futureBookings });
+    res.render('dashboard', { bookings: convertedBookings, futureBookings });
   } catch (error) {
     console.error('Error fetching bookings:', error);
     res.status(500).send('Server Error');
