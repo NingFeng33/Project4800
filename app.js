@@ -1,4 +1,4 @@
-process.env.TZ = 'America/Vancouver'
+process.env.TZ = 'UTC'
 require("dotenv").config();
 require('./config/sequelize');
 const express = require("express");
