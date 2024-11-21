@@ -93,6 +93,16 @@ CREATE TABLE Room_Booking (
     FOREIGN KEY (course_id) REFERENCES Courses(course_id)
 );
 
+-- Creating table for 'Faculty_Assignment'
+CREATE TABLE Faculty_Assignment (
+    assignment_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (book_id) REFERENCES Room_Booking(book_id),
+    FOREIGN KEY (user_id) REFERENCES User(user_id)
+);
+
+
 -----------------------------------------------------------------
 If need modify this database except adding data into this database for own
 testing, please update this file and infom the  whole teammates 
