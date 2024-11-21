@@ -28,11 +28,34 @@
                     <ul>
                         <% bookings.forEach(booking => { %>
                             <li>
-                                <strong>Course:</strong> <%= booking.Course.course_name %> <br>
-                                <strong>Time:</strong> <%= new Date(booking.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit',
-                                 timeZone: 'America/Vancouver' }) %> - 
-                                <%= new Date(booking.end_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit',
-                                 timeZone: 'America/Vancouver' }) %> <br>
+                                <strong>Course: </strong><%= booking.Course.course_code %> <%= booking.Course.course_name %> <br>
+                                <strong>Date:</strong>
+                                <%= new Intl.DateTimeFormat('en-US', {
+                                    timeZone: 'America/Vancouver',
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit'
+                                }).format(new Date(booking.start_time)) %> - 
+                                <%= new Intl.DateTimeFormat('en-US', {
+                                    timeZone: 'America/Vancouver',
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit'
+                                }).format(new Date(booking.end_time)) %><br>
+
+                                <strong>Time:</strong>
+                                <%= new Intl.DateTimeFormat('en-US', {
+                                    timeZone: 'America/Vancouver',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: true
+                                }).format(new Date(booking.start_time)) %> - 
+                                <%= new Intl.DateTimeFormat('en-US', {
+                                    timeZone: 'America/Vancouver',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: true
+                                }).format(new Date(booking.end_time)) %><br>
                                 <strong>Room:</strong> <%= booking.Room.room_number %>
                             </li>
                         <% }) %>
@@ -62,7 +85,20 @@
                         <% if (futureBookings.length > 0) { %>
                             <% futureBookings.forEach(booking => { %>
                                 <p>
-                                    <strong>Course:</strong> <%= booking.Course.course_name %><br>
+                                    <strong>Course: </strong><%= booking.Course.course_code %> <%= booking.Course.course_name %><br>
+                                    <strong>Date:</strong>
+                                    <%= new Intl.DateTimeFormat('en-US', {
+                                        timeZone: 'America/Vancouver',
+                                        year: 'numeric',
+                                        month: '2-digit',
+                                        day: '2-digit'
+                                    }).format(new Date(booking.start_time)) %> - 
+                                    <%= new Intl.DateTimeFormat('en-US', {
+                                        timeZone: 'America/Vancouver',
+                                        year: 'numeric',
+                                        month: '2-digit',
+                                        day: '2-digit'
+                                    }).format(new Date(booking.end_time)) %><br>
                                     <strong>Time:</strong>
                                     <%= new Date(booking.start_time).toLocaleString('en-US', { 
                                         hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'America/Vancouver' 
@@ -70,8 +106,6 @@
                                     <%= new Date(booking.end_time).toLocaleString('en-US', { 
                                         hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'America/Vancouver' 
                                     }) %><br>
-                                    <strong>Date:</strong> 
-                                    <%= new Date(booking.booking_date).toLocaleDateString('en-US') %><br>
                                     <strong>Room:</strong> <%= booking.Room.room_number %>
                                 </p>
                             <% }) %>

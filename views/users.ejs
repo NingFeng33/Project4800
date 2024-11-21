@@ -38,7 +38,7 @@
             <label for="password">Password:</label>
             <input type="password" name="password" required>
 
-            <button type="submit">Add User</button>
+            <button type="submit" class="edit">Add User</button>
         </form>
 
         <!-- User List Table -->
@@ -61,11 +61,11 @@
                         <td><%= user.email %></td>
                         <td><%= user.Role ? user.Role.role_name : 'N/A' %></td>
                         <td class="action-buttons">
-                            <button onclick="openEditModal('<%= user.user_id %>', '<%= user.F_Name %>', '<%= user.L_Name %>', '<%= user.email %>', '<%= user.Role.role_name %>')">
+                            <button class="edit" onclick="openEditModal('<%= user.user_id %>', '<%= user.F_Name %>', '<%= user.L_Name %>', '<%= user.email %>', '<%= user.Role.role_name %>')">
                                 Edit
                             </button>                           
                             <form action="/admin/users/<%= user.user_id %>/delete" method="POST" style="display:inline;" onsubmit="return confirmDelete()">
-                                <button type="submit">Delete</button>
+                                <button class="delete" type="submit">Delete</button>
                             </form>
                         </td>
                     </tr>

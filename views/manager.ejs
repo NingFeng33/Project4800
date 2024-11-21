@@ -34,7 +34,7 @@
         <label for="endDate">End Date:</label>
         <input type="date" name="endDate" required>
   
-        <button type="submit">Add Course</button>
+        <button class="add" type="submit">Add Course</button>
       </form>
     </div>
 
@@ -43,7 +43,7 @@
       <form action="/admin/programs" method="POST">
         <label for="programName">Program Name:</label>
         <input type="text" name="programName" required>
-        <button type="submit">Add Program</button>
+        <button class="add" type="submit">Add Program</button>
       </form>
     </div>    
   
@@ -56,14 +56,14 @@
         <label for="capacity">Capacity:</label> 
         <input type="number" name="capacity" required> 
       
-        <button type="submit">Add Room</button>
+        <button class="add" type="submit">Add Room</button>
       </form>
     </div>
   
     <div class="filter-container">
-      <input type="text" id="search-manager" placeholder="Search Courses..." oninput="filterAndSearch()">
+      <input type="text" id="search-input" placeholder="Search Courses..." oninput="filterAndSearchWithPagination()">
       
-      <select id="program-filter" onchange="filterAndSearch()">
+      <select id="program-filter" onchange="filterAndSearchWithPagination()">
         <option value="">All Programs</option>
         <% programs.forEach(program => { %>
             <option value="<%= program.program_name %>"><%= program.program_name %></option>
@@ -83,19 +83,7 @@
       </thead>
       <tbody id="course-table-body">
         <% courses.forEach(course => { %>
-          <tr>
-            <td><%= course.course_code %></td>
-            <td><%= course.course_name %></td>
-            <td><%= course.Programs ? course.Programs.program_name : 'N/A' %></td>
-            <td>
-              <button onclick="openEditModal('course', '<%= course.course_id %>', '<%= course.course_code %>', 
-              '<%= course.course_name %>', '<%= course.Program ? course.Program.program_name : ',' %>')">Edit</button>
-              <form action="/admin/courses/<%= course.course_id %>/delete" method="POST" style="display:inline;"
-                  onsubmit="return confirmDelete('course')">
-                <button type="submit">Delete</button>
-              </form>
-          </td>          
-          </tr>
+          <tr></tr>
         <% }) %>
       </tbody>
     </table>
@@ -113,9 +101,9 @@
           <tr>
             <td><%= program.program_name %></td>
             <td>
-              <button onclick="openEditProgramModal('<%= program.program_id %>', '<%= program.program_name %>')">Edit</button>
+              <button class="edit" onclick="openEditProgramModal('<%= program.program_id %>', '<%= program.program_name %>')">Edit</button>
                 <form action="/admin/programs/<%= program.program_id %>/delete" method="POST" style="display: inline;" onsubmit="return confirmDelete('program')">
-                    <button type="submit">Delete</button>
+                    <button class="delete" type="submit">Delete</button>
                 </form>
             </td>
           </tr>
@@ -125,7 +113,6 @@
 
     <h2>Rooms</h2>
     <div class="pagination" id="room-pagination">
-      <button id="next-room" onclick="nextPageRoom()">Next</button>
     </div>
     <table>
       <thead>
