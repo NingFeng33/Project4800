@@ -37,20 +37,33 @@ body {
     box-sizing: border-box;
   }
   
-  button {
-    display: inline-block;
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
+/* Buttons */
+button {
+  padding: 5px 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Add Button */
+button.add {
+  background-color: #007bff;
+  color: white;
+}
+
+
+/* Edit Button */
+button.edit {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Delete Button */
+button.delete {
+  background-color: #dc3545;
+  color: white;
+}
   
   .error-message {
     background-color: #f8d7da;
@@ -61,58 +74,57 @@ body {
     border-radius: 4px;
   }
   
-  /* Table Styles */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  table th, table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  table th {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  table tr:hover {
-    background-color: #f1f1f1;
-  }
-
-  .pagination {
-    display: flex;
-    justify-content: center; /* Centers the buttons */
-    align-items: center;
-    margin-top: 15px;
+/* General Table Styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
 }
 
+table th, table td {
+  text-align: left;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+table th {
+  background-color: #007bff;
+  color: white;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Pagination */
+.pagination {
+  text-align: center;
+  margin: 10px 0;
+}
 
 .pagination button {
-    margin: 0 10px; /* Adds space between buttons and page info */
-    padding: 5px 15px; /* Gives the buttons padding */
-    border: none;
-    background-color: #007bff; /* Blue background */
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.pagination button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-}
-
-.pagination span {
-    font-size: 16px;
-    color: #333;
+  margin: 0 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
 .pagination button:disabled {
-    background-color: #ccc; /* Gray background for disabled buttons */
-    cursor: not-allowed; /* Not clickable */
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 14px;
+  margin: 0 10px;
 }
   
   /* Form Section Styling */
