@@ -61,8 +61,9 @@ router.post('/courses', async (req, res) => {
 
 // Delete course by ID
 router.post('/courses/:id/delete', async (req, res) => {
+  const { id } = req.params;
   try {
-      await Course.destroy({ where: { course_id: req.params.id } });
+      await Course.destroy({ where: { course_id: id } });
       res.redirect('/admin/manager'); 
   } catch (error) {
       console.error('Error deleting course:', error);
@@ -128,34 +129,6 @@ router.get('/rooms', async (req, res) => {
   }
 });
 
-// Fetch course data for editing
-// router.get('/courses/:id/edit', async (req, res) => {
-//   try {
-//       const course = await Course.findByPk(req.params.id, { include: Program });
-//       const courses = await Course.findAll({ include: [Program] }); 
-//       const rooms = await Room.findAll(); 
-//       const programs = await Program.findAll(); 
-
-//       if (!course) {
-//           console.error(`Course with ID ${req.params.id} not found.`);
-//           return res.status(404).send(`Course with ID ${req.params.id} not found.`);
-//       }
-
-//       res.render('manager', {
-//           courses,
-//           rooms,
-//           programs,
-//           showModal: true,
-//           editType: 'course',
-//           editData: course
-//       });
-//   } catch (error) {
-//       console.error('Error fetching course:', error);
-//       res.status(500).send('Error fetching course');
-//   }
-// });
-
-
 // Handle form submission to update course
 router.post('/courses/:id/edit', async (req, res) => {
   const { id } = req.params;
@@ -194,18 +167,6 @@ router.post('/courses/:id/edit', async (req, res) => {
       res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
-
-
-// Fetch room data for editing
-// router.get('/rooms/:id/edit', async (req, res) => {
-//   try {
-//       const room = await Room.findByPk(req.params.id);
-//       res.render('manager', { showModal: true, editType: 'room', editData: room });
-//   } catch (error) {
-//       console.error('Error fetching room:', error);
-//       res.status(500).send('Error fetching room');
-//   }
-// });
 
 // Handle form submission to update room
 router.post('/rooms/:id/edit', async (req, res) => {
