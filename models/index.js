@@ -8,6 +8,7 @@ const Program = require('./program');
 const RoomRental = require('./room_rental')
 const FacultyAssignment = require('./faculty_assignment')
 
+
 // Define associations
 User.belongsTo(Role, { foreignKey: 'role_id' });
 Role.hasMany(User, { foreignKey: 'role_id' });
@@ -37,4 +38,5 @@ module.exports = {
   RoomRental,
   sequelize,
   FacultyAssignment
+
 };

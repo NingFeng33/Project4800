@@ -238,7 +238,6 @@ function bookRoom() {
     });
 }
 
-
 async function loadFacultyUsers() {
     const facultySelector = document.getElementById('facultySelector');
     try {
