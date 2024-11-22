@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { fetchData } = require('../controllers/authController');
 const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
-const { Booking, Room, Course } = require('../models');
+const { User, Booking, Room, Course, Role } = require('../models');
+
 
 
 router.get('/', async (req, res) => {
@@ -45,7 +46,7 @@ router.get('/bookings', isAdmin, isAuthenticated, async (req, res) => {
                 },
                 {
                     model: Course,
-                    attributes: ['course_id'],
+                    attributes: ['course_name', 'course_code'],
                 }
             ],
             attributes: ['room_id', 'start_time', 'end_time', 'course_id']
@@ -55,15 +56,42 @@ router.get('/bookings', isAdmin, isAuthenticated, async (req, res) => {
             room_id: booking.room_id,
             room_number: booking.Room.room_number,
             course_id: booking.course_id,
+            course_name: booking.Course?.course_name || 'N/A',
+            course_code: booking.Course?.course_code || 'N/A',
             start_time: booking.start_time,
             end_time: booking.end_time
         }));
 
-        res.json(bookingData);
+        const users = await User.findAll({
+            attributes: ['user_id', 'F_Name', 'L_Name'],
+            include: {
+                model: Role,
+                attributes: ['role_name'] // Fetch role if needed
+            }
+        });
+
+        console.log({ bookings: bookingData, users });
+
+
+        res.json({ bookings: bookingData, users });
     } catch (error) {
         console.error('Error fetching bookings:', error);
         res.status(500).json({ message: 'Error fetching bookings' });
     }
 });
+
+router.get('/facultyUsers', async (req, res) => {
+    try {
+        const facultyUsers = await User.findAll({
+            where: { role_id: 2 }, // Assuming `2` is the role ID for faculty users
+            attributes: ['user_id', 'F_Name', 'L_Name']
+        });
+        res.json(facultyUsers);
+    } catch (error) {
+        console.error('Error fetching faculty users:', error);
+        res.status(500).json({ message: 'Error fetching faculty users' });
+    }
+});
+
 
 module.exports = router;

@@ -1,7 +1,9 @@
-const { User, Role, Room, Booking, Course, RoomRental, sequelize } = require("../models");
+const { User, Role, Room, Booking, Course, RoomRental, sequelize, FacultyAssignment } = require("../models");
 //const sequelize = require("../config/db");
 const bcrypt = require("bcrypt");
 const { Op } = require('sequelize');
+const { toZonedTime, format } = require('date-fns-tz');
+const moment = require("moment-timezone");
 
 console.log(Room);
 // Login
@@ -134,26 +136,62 @@ exports.checkRoomAvailability = async (req, res) => {
 
 // Book a room
 exports.bookRoom = async (req, res) => {
-  const { roomId, date, endDate, startTime, endTime, courseId } = req.body;
+  const { roomId, date, endDate, startTime, endTime, courseId, facultyIds } = req.body;
 
-  const formattedStartTime = `${date} ${startTime}:00`;
-  const formattedEndTime = `${endDate} ${endTime}:00`;
+  // Combine date and time into a single string
+  const formattedStartTimePST = `${date} ${startTime}:00`;
+  const formattedEndTimePST = `${endDate} ${endTime}:00`;
 
-  const insertQuery = `
+  // Convert PST time to UTC using moment-timezone
+  const formattedStartTimeUTC = moment.tz(formattedStartTimePST, 'America/Vancouver').utc().format('YYYY-MM-DD HH:mm:ss');
+  const formattedEndTimeUTC = moment.tz(formattedEndTimePST, 'America/Vancouver').utc().format('YYYY-MM-DD HH:mm:ss');
+
+  const insertBookingQuery = `
     INSERT INTO Room_Booking
     (room_id, course_id, start_time, end_time, booking_date, end_date, booking_status)
     VALUES (?, ?, ?, ?, ?, ?, ?);
   `;
 
+  const insertFacultyAssignmentQuery = `
+    INSERT INTO Faculty_Assignment
+    (book_id, user_id)
+    VALUES (?, ?);
+  `;
+
+  const transaction = await sequelize.transaction();
+
   try {
-    await sequelize.query(insertQuery, {
-      replacements: [roomId, courseId, formattedStartTime, formattedEndTime, date, endDate, 'booked'],
-      type: sequelize.QueryTypes.INSERT
+    // Insert the booking and get the booking ID
+    const [result] = await sequelize.query(insertBookingQuery, {
+      replacements: [roomId, courseId, formattedStartTimeUTC, formattedEndTimeUTC, date, endDate, 'booked'],
+      type: sequelize.QueryTypes.INSERT,
+      transaction,
     });
-    res.json({ success: true, message: "Room booked successfully" });
+
+    const bookingId = result;
+
+    // Assign faculty users to the booking
+    if (Array.isArray(facultyIds)) {
+      for (const facultyId of facultyIds) {
+        await sequelize.query(insertFacultyAssignmentQuery, {
+          replacements: [bookingId, facultyId],
+          type: sequelize.QueryTypes.INSERT,
+          transaction,
+        });
+      }
+    }
+
+    // Commit the transaction
+    await transaction.commit();
+
+    res.json({ success: true, message: "Room booked successfully and faculty assigned." });
   } catch (error) {
-    console.error("Error booking room:", error);
-    res.status(500).json({ success: false, message: "Error booking room" });
+    console.error("Error booking room and assigning faculty:", error);
+
+    // Rollback the transaction in case of error
+    await transaction.rollback();
+
+    res.status(500).json({ success: false, message: "Error booking room and assigning faculty" });
   }
 };
 
@@ -185,38 +223,91 @@ exports.rentalRoom = async (req, res) => {
 
 exports.getAdminDashboard = async (req, res) => {
   try {
-    const today = new Date().toISOString().slice(0, 10); // Format today's date
-    console.log("Today's date:", today); 
+  
+  const today = moment().tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss A');
+  console.log("Current time in Vancouver timezone:", today);
 
     // Fetch today's bookings
     const todayBookings = await Booking.findAll({
-      where: { booking_date: today },
+      //where: { booking_date: formattedDate },
       include: [
-        { model: Course, attributes: ['course_name'] },
-        { model: Room, attributes: ['room_number'] }
+        { model: Course, attributes: ['course_name', 'course_code'] },
+        { model: Room, attributes: ['room_number'] },
+        {
+          model: FacultyAssignment,
+          as: 'FacultyAssignments',
+          include: {
+            model: User,
+            as: 'User',
+            attributes: ['F_Name', 'L_Name'],
+          },
+        },
       ]
     });
 
-    console.log("Bookings for today:", todayBookings);
+      const convertedBookings = todayBookings.map(booking => {
+      const startTime = moment.tz(booking.start_time, 'UTC').tz('America/Vancouver');
+      const endTime = moment.tz(booking.end_time, 'UTC').tz('America/Vancouver');
+      const assignedFaculty = booking.FacultyAssignments.map(faculty => {
+        return `${faculty.User.F_Name} ${faculty.User.L_Name}`;
+      }).join(', ');
+
+      console.log("Start Time in Vancouver:", startTime.format('YYYY-MM-DD hh:mm:ss A'));
+      console.log("End Time in Vancouver:", endTime.format('YYYY-MM-DD hh:mm:ss A'));
+      return {
+        ...booking.dataValues,
+        displayStartTime: startTime.format('YYYY-MM-DD hh:mm A'),
+        displayEndTime: endTime.format('YYYY-MM-DD hh:mm A'),
+        assignedFaculty
+      };
+    });
+
+    
+    console.log("Bookings for today:", convertedBookings);
 
     // Fetch future bookings
     const futureBookings = await Booking.findAll({
       where: {
         booking_date: {
-          [Op.gt]: today // Dates greater than today
-        }
+          [Op.gt]: today,
+        },
       },
       include: [
-        { model: Course, attributes: ['course_name'] },
-        { model: Room, attributes: ['room_number'] }
+        { model: Course, attributes: ['course_name', 'course_code'] },
+        { model: Room, attributes: ['room_number'] },
+        {
+          model: FacultyAssignment,
+          as: 'FacultyAssignments',
+          include: {
+            model: User,
+            as: 'User',
+            attributes: ['F_Name', 'L_Name'],
+          },
+        },
       ],
-      order: [['booking_date', 'ASC'], ['start_time', 'ASC']] // Order by date and time
+      order: [['booking_date', 'ASC'], ['start_time', 'ASC']],
     });
+    
+    const convertedFutureBookings = futureBookings.map(booking => {
+      const startTime = moment.tz(booking.start_time, 'UTC').tz('America/Vancouver');
+      const endTime = moment.tz(booking.end_time, 'UTC').tz('America/Vancouver');
+    
+      const assignedFaculty = booking.FacultyAssignments.map(faculty => {
+        return `${faculty.User.F_Name} ${faculty.User.L_Name}`;
+      }).join(', ');
+    
+      return {
+        ...booking.dataValues,
+        displayStartTime: startTime.format('YYYY-MM-DD hh:mm A'),
+        displayEndTime: endTime.format('YYYY-MM-DD hh:mm A'),
+        assignedFaculty, // Add assigned faculty to the booking
+      };
+    });    
 
-    console.log("Future bookings:", futureBookings);
+    console.log("Future bookings:", convertedFutureBookings);
 
     // Render dashboard with both today's bookings and future bookings
-    res.render('dashboard', { bookings: todayBookings, futureBookings });
+    res.render('dashboard', { bookings: convertedBookings, convertedFutureBookings });
   } catch (error) {
     console.error('Error fetching bookings:', error);
     res.status(500).send('Server Error');
@@ -310,8 +401,3 @@ exports.deleteUser = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
-
-// Dashboard
-// exports.getDashboard = (_req, res) => {
-//   res.render("dashboard", { message: "" });
-// };

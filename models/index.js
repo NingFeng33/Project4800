@@ -6,6 +6,8 @@ const Course = require('./course');
 const Booking = require('./booking');
 const Program = require('./program');
 const RoomRental = require('./room_rental')
+const FacultyAssignment = require('./faculty_assignment')
+
 
 // Define associations
 User.belongsTo(Role, { foreignKey: 'role_id' });
@@ -23,6 +25,9 @@ Course.belongsTo(Program, { foreignKey: 'program_id',  as: 'Program' });
 RoomRental.belongsTo(Room, {foreignKey: 'room_id'});
 Room.hasMany(RoomRental, {foreignKey: 'rental_id'})
 
+Booking.hasMany(FacultyAssignment, { foreignKey: "book_id", as: "FacultyAssignments", });
+FacultyAssignment.belongsTo(User, { foreignKey: "user_id", as: "User" });
+
 module.exports = {
   User,
   Role,
@@ -31,5 +36,7 @@ module.exports = {
   Booking,
   Program,
   RoomRental,
-  sequelize
+  sequelize,
+  FacultyAssignment
+
 };

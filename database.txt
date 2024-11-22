@@ -86,12 +86,22 @@ CREATE TABLE Room_Booking (
     booking_status VARCHAR(100),
     room_id INT,
     course_id INT,
-    start_time DATETIME,
-    end_time DATETIME,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
     booking_date DATE,
     FOREIGN KEY (room_id) REFERENCES Room(room_id),
     FOREIGN KEY (course_id) REFERENCES Courses(course_id)
 );
+
+-- Creating table for 'Faculty_Assignment'
+CREATE TABLE Faculty_Assignment (
+    assignment_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (book_id) REFERENCES Room_Booking(book_id),
+    FOREIGN KEY (user_id) REFERENCES User(user_id)
+);
+
 
 -----------------------------------------------------------------
 If need modify this database except adding data into this database for own
@@ -242,3 +252,52 @@ INSERT INTO Roles (role_name, role_description) VALUES ('Faculty', 'Faculty acce
 
 ALTER TABLE Room_Booking
 ADD COLUMN end_date DATE;
+
+ALTER TABLE courses
+ADD COLUMN length_week INT,
+ADD COLUMN size INT;
+
+
+UPDATE courses SET length_week = 8, size = 17 WHERE course_id = 1;
+UPDATE courses SET length_week = 8, size = 17 WHERE course_id = 2;
+UPDATE courses SET length_week = 8, size = 17 WHERE course_id = 3;
+UPDATE courses SET length_week = 8, size = 17 WHERE course_id = 4;
+UPDATE courses SET length_week = 6, size = 17 WHERE course_id = 5;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 6;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 7;
+UPDATE courses SET length_week = 5, size = 17 WHERE course_id = 8;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 9;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 10;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 11;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 12;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 13;
+UPDATE courses SET length_week = 5, size = 17 WHERE course_id = 14;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 15;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 16;
+UPDATE courses SET length_week = 5, size = 17 WHERE course_id = 17;
+UPDATE courses SET length_week = 5, size = 17 WHERE course_id = 18;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 19;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 20;
+UPDATE courses SET length_week = 2, size = 17 WHERE course_id = 21;
+UPDATE courses SET length_week = 7, size = 17 WHERE course_id = 22;
+UPDATE courses SET length_week = 1, size = 34 WHERE course_id = 23;
+UPDATE courses SET length_week = 4, size = 34 WHERE course_id = 24;
+UPDATE courses SET length_week = 2, size = 34 WHERE course_id = 25;
+UPDATE courses SET length_week = 2, size = 34 WHERE course_id = 26;
+UPDATE courses SET length_week = 5, size = 34 WHERE course_id = 27;
+UPDATE courses SET length_week = 2, size = 34 WHERE course_id = 28;
+UPDATE courses SET length_week = 4, size = 17 WHERE course_id = 29;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 30;
+UPDATE courses SET length_week = 3, size = 17 WHERE course_id = 31;
+UPDATE courses SET length_week = 2, size = 17 WHERE course_id = 32;
+UPDATE courses SET length_week = 2, size = 17 WHERE course_id = 33;
+UPDATE courses SET length_week = 2, size = 17 WHERE course_id = 34;
+UPDATE courses SET length_week = 2, size = 34 WHERE course_id = 35;
+UPDATE courses SET length_week = 4, size = 34 WHERE course_id = 36;
+UPDATE courses SET length_week = 3, size = 34 WHERE course_id = 37;
+UPDATE courses SET length_week = 2, size = 34 WHERE course_id = 38;
+UPDATE courses SET length_week = 5, size = 34 WHERE course_id = 39;
+UPDATE courses SET length_week = 3, size = 34 WHERE course_id = 40;
+UPDATE courses SET length_week = 5, size = 34 WHERE course_id = 41;
+UPDATE courses SET length_week = 1, size = 34 WHERE course_id = 42;
+UPDATE courses SET length_week = 7, size = 34 WHERE course_id = 43;

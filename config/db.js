@@ -1,5 +1,5 @@
 require('dotenv').config();
-process.env.TZ = 'America/Vancouver';
+process.env.TZ = 'UTC';
 console.log("Current timezone set in Node.js:", process.env.TZ);
 console.log("Current time according to Node.js:", new Date().toString());
 console.log("UTC time according to Node.js:", new Date().toUTCString());
@@ -10,7 +10,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   dialect: "mysql",
   dialectOptions: {
     charset: "utf8mb4",
-    timezone: 'local',
+    timezone: 'Z',
   },
   logging: false,
 });

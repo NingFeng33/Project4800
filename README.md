@@ -5,7 +5,7 @@
 - npm init -y
 - npm install express mysql2 dotenv bcryptjs mysql2
 - npm install express-session body-parser sequelize bcrypt connect-session-sequelize ejs
-- npm install date-fns-tz
+- npm install date-fns-tz date-fns moment-timezone
 # making all your work in your own branch under 'dev' branch
 # merge your work into dev branch
 # dev branch will syn to server due to cliet's check by week

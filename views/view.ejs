@@ -6,37 +6,66 @@
     <title>Booking Calendar</title>
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css' rel='stylesheet' />
     <style>
+        /* General layout */
         .container {
             display: flex;
+            flex-wrap: wrap;
         }
-
+    
         .sidebar {
             width: 300px;
             padding: 20px;
             background-color: #f4f4f4;
+            border-right: 1px solid #ddd;
         }
-
+    
         #calendar {
-            flex-grow: 1;
-            max-width: 80%;
-            margin: 0 auto;
-        }
+        flex-grow: 1;
+        max-width: 80%;
+        margin: 0 auto;
+    }
 
-        .fc-event {
-            background-color: #3366cc !important;
-            color: white !important;
-            border: none !important;
-            padding: 5px;
-        }
+    /* Event styling */
+    .fc-event {
+        background-color: #007bff !important; /* Blue background */
+        color: white !important; /* White text */
+        border: none !important; /* No border */
+        border-radius: 8px; /* Rounded corners */
+        font-size: 1rem; /* Larger font size */
+        line-height: 1.5; /* Spacing between lines */
+        padding: 10px; /* Add padding for better readability */
+        height: auto !important; /* Allow the height to adjust for content */
+        white-space: normal !important; /* Allow text to wrap */
+    }
 
-        .fc-daygrid-event, .fc-timegrid-event {
-            border-radius: 4px;
-            padding: 2px 4px;
-        }
+    /* Adjust the day and time grid styling for better visibility */
+    .fc-daygrid-event, .fc-timegrid-event {
+        padding: 8px 10px; /* Add padding to the event */
+        margin: 2px; /* Space between events */
+    }
 
-        .fc-toolbar-title {
-            font-size: 1.4em;
-            font-weight: bold;
+    /* Highlight today's date */
+    .fc-day-today {
+        background-color: #ffe4b5 !important; /* Light orange background */
+    }
+
+    /* Calendar header styles */
+    .fc-toolbar-title {
+        font-size: 1.5em;
+        font-weight: bold;
+    }
+
+    /* Sidebar styling */
+    .sidebar {
+        width: 300px;
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+    
+        /* Calendar background */
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
@@ -105,25 +134,77 @@
         async function loadBookingsToCalendar() {
             try {
                 const response = await fetch('/api/bookings');
-                const bookings = await response.json();
+                const data = await response.json();
+
+                if (!data.bookings || !data.users) {
+                    console.error("Invalid response format from API:", data);
+                    return;
+                }
+
+                const { bookings, users } = data; // Destructure the response
+                console.log("Bookings:", bookings);
+                console.log("Users:", users);
 
                 window.calendar.removeAllEvents();
+
                 bookings.forEach(booking => {
+                    const courseCode = booking.course_code || booking.Course?.course_code || 'N/A';
+                    const courseName = booking.course_name || booking.Course?.course_name || 'N/A';
+                    const roomNumber = booking.room_number || booking.Room?.room_number || 'N/A';
+                    const assignedFaculty = users
+                        .filter(user => booking.assignedFacultyIds?.includes(user.user_id))
+                        .map(user => `${user.F_Name} ${user.L_Name}`)
+                        .join(', ') || 'N/A';
+
                     window.calendar.addEvent({
-                        title: `Room ${booking.room_number}`,
+                        title: `Course: ${booking.course_code} - ${booking.course_name}\nRoom: ${booking.room_number}
+                        `,
                         start: new Date(booking.start_time).toISOString(),
                         end: new Date(booking.end_time).toISOString(),
                         extendedProps: {
                             roomId: booking.room_id,
-                            courseId: booking.course_id
-                        }
+                            courseId: booking.course_id,
+                            date: booking.booking_date,
+                            assignedFaculty: booking.assignedFaculty || 'N/A'
+                        },
+                        description: `Course Code: ${booking.course_code}\nCourse Name: ${booking.course_name}\nAssigned Faculty: ${assignedFaculty}`
                     });
                 });
+                // Optionally populate a dropdown or UI with users
+                const facultySelector = document.getElementById('facultySelector');
+                if (facultySelector) {
+                    facultySelector.innerHTML = ''; // Clear previous options
+                    users.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.user_id;
+                        option.textContent = `${user.F_Name} ${user.L_Name}`;
+                        facultySelector.appendChild(option);
+                    });
+                }
                 window.calendar.render();
             } catch (error) {
                 console.error("Failed to load bookings:", error);
             }
         }
+
+        const calendarEl = document.getElementById('calendar');
+
+        window.calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            eventDidMount: function(info) {
+                const tooltipContent = `
+                    <strong>Course:</strong> ${info.event.extendedProps.courseId}<br>
+                    <strong>Room:</strong> ${info.event.extendedProps.roomId}<br>
+                    <strong>Faculty:</strong> ${info.event.extendedProps.assignedFaculty}
+                `;
+                tippy(info.el, {
+                    content: tooltipContent,
+                    placement: 'top',
+                    arrow: true,
+                });
+            },
+        });
+
     </script>
 </body>
 </html>
