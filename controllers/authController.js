@@ -229,7 +229,7 @@ exports.getAdminDashboard = async (req, res) => {
 
     // Fetch today's bookings
     const todayBookings = await Booking.findAll({
-      //where: { booking_date: formattedDate },
+      where: { booking_date: today },
       include: [
         { model: Course, attributes: ['course_name', 'course_code'] },
         { model: Room, attributes: ['room_number'] },
