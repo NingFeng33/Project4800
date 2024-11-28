@@ -40,6 +40,13 @@ exports.postLogin = async (req, res) => {
 
     req.session.userId = user.user_id;
     req.session.role = roleName;
+    req.session.user = {
+      user_id: user.user_id,
+      role: user.Role.role_name,
+      email: user.email,
+      F_Name: user.F_Name,
+      L_Name: user.L_Name,
+    };
 
     req.session.save(() => {
       switch(roleName) {
@@ -273,8 +280,8 @@ exports.getAdminDashboard = async (req, res) => {
         return `${faculty.User.F_Name} ${faculty.User.L_Name}`;
       }).join(', ');
 
-      console.log("Start Time in Vancouver:", startTime.format('YYYY-MM-DD hh:mm:ss A'));
-      console.log("End Time in Vancouver:", endTime.format('YYYY-MM-DD hh:mm:ss A'));
+      //console.log("Start Time in Vancouver:", startTime.format('YYYY-MM-DD hh:mm:ss A'));
+      //console.log("End Time in Vancouver:", endTime.format('YYYY-MM-DD hh:mm:ss A'));
       return {
         ...booking.dataValues,
         displayStartTime: startTime.format('YYYY-MM-DD hh:mm A'),
