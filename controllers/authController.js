@@ -4,6 +4,9 @@ const bcrypt = require("bcrypt");
 const { Op } = require('sequelize');
 const { toZonedTime, format } = require('date-fns-tz');
 const moment = require("moment-timezone");
+const startOfToday = moment().tz('America/Vancouver').startOf('day').format('YYYY-MM-DD HH:mm:ss');
+const endOfToday = moment().tz('America/Vancouver').endOf('day').format('YYYY-MM-DD HH:mm:ss');
+const currentTime = moment().tz('America/Vancouver').format('YYYY-MM-DD HH:mm:ss');
 
 console.log(Room);
 // Login
@@ -225,11 +228,29 @@ exports.getAdminDashboard = async (req, res) => {
   try {
   
   const today = moment().tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss A');
-  console.log("Current time in Vancouver timezone:", today);
+  // console.log("Current time in Vancouver timezone:", today);
 
     // Fetch today's bookings
     const todayBookings = await Booking.findAll({
-      where: { booking_date: today },
+      where: {
+        [Op.or]: [
+          // Bookings starting today
+          {
+            booking_date: {
+              [Op.gte]: startOfToday,
+              [Op.lte]: endOfToday,
+            },
+          },
+          {
+            start_time: {
+              [Op.lte]: currentTime, 
+            },
+            end_time: {
+              [Op.gte]: currentTime,
+            },
+          },
+        ],
+      },
       include: [
         { model: Course, attributes: ['course_name', 'course_code'] },
         { model: Room, attributes: ['room_number'] },
