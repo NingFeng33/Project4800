@@ -30,30 +30,71 @@ const Room = sequelize.define(
     }
 );
 
-Room.findAvailableRooms = async function(date, endDate, startTime, endTime, courseId) {
-    // Format the start and end times to be used in the raw SQL query
-    const startDateTime = `${date} ${startTime}:00`;
-    const endDateTime = `${endDate} ${endTime}:00`;
 
-    console.log("Checking availability from:", startDateTime, "to:", endDateTime);
-    let whereClause = `(Room.room_status != 'unavailable' OR Room.room_status IS NULL)
-                       AND (Bookings.room_id IS NULL OR
-                            Bookings.start_time >= '${endDateTime}' OR
-                            Bookings.end_time <= '${startDateTime}')`;
+Room.findAvailableRooms = async function(startDate, endDate, startTime, endTime, courseId) {
+    const formattedStartDate = new Date(startDate).toISOString().slice(0, 10);
+    const formattedEndDate = new Date(endDate).toISOString().slice(0, 10);
 
-    if (courseId) {
-        whereClause += `AND Room.capacity >= (SELECT size FROM Courses WHERE course_id = '${courseId}')`;
+    console.log("Checking availability from:", formattedStartDate, startTime, "to:", formattedEndDate, endTime);
+
+    const dates = [];
+    let currentDate = new Date(formattedStartDate);
+    while (currentDate <= new Date(formattedEndDate)) {
+        dates.push(currentDate.toISOString().slice(0, 10));
+        currentDate.setDate(currentDate.getDate() + 1);
     }
+    console.log("Checking days:", dates);
 
-    const results = await sequelize.query(`
-        SELECT Room.room_id, Room.room_status, Room.room_number, Room.capacity
-        FROM Room
-        LEFT JOIN Room_Booking AS Bookings ON Room.room_id = Bookings.room_id
-        LEFT JOIN Courses AS Course ON Bookings.course_id = Course.course_id
-        WHERE ${whereClause}
-        GROUP BY Room.room_id
-        HAVING COUNT(Bookings.room_id) = 0
-    `, { type: sequelize.QueryTypes.SELECT });
-	return results;
+    const availableRoomsPerDay = await Promise.all(dates.map(async (date) => {
+        // Parse the date and start time to a Date object
+        let startDateTime = new Date(`${date}T${startTime}:00Z`);
+        // Adjust for the 5-hour difference
+        startDateTime.setHours(startDateTime.getHours() + 8);
+        
+        // Parse the date and end time to a Date object
+        let endDateTime = new Date(`${date}T${endTime}:00Z`);
+        // Adjust for the 5-hour difference
+        endDateTime.setHours(endDateTime.getHours() + 8);
+
+        // Format back to string for SQL query
+        const dailyStartDateTime = startDateTime.toISOString().slice(0, 19).replace('T', ' ');
+        const dailyEndDateTime = endDateTime.toISOString().slice(0, 19).replace('T', ' ');
+
+        console.log("Adjusted Checking availability for:", dailyStartDateTime, "to", dailyEndDateTime);
+        let additionalCondition = '';
+        if (courseId) {
+            additionalCondition = `AND Room.capacity >= (SELECT size FROM Courses WHERE course_id = '${courseId}')`;
+        }
+        const query = `
+            SELECT Room.room_id, Room.capacity, Room.room_number
+            FROM Room
+            WHERE Room.room_id NOT IN (
+                SELECT Bookings.room_id
+                FROM Room_Booking AS Bookings
+                WHERE (
+                    Bookings.booking_date <= '${date}' AND
+                    Bookings.end_date >= '${date}'
+                ) AND (
+                    NOT (Bookings.end_time <= '${dailyStartDateTime}' OR
+                    Bookings.start_time >= '${dailyEndDateTime}')
+                )
+            )
+			${additionalCondition}
+            ORDER BY Room.room_number;
+        `;
+        return sequelize.query(query, { type: sequelize.QueryTypes.SELECT });
+    }));
+
+    const availableRooms = availableRoomsPerDay.reduce((acc, rooms, index) => {
+        if (index === 0) {
+            return rooms;
+        }
+        return acc.filter(room => rooms.some(r => r.room_id === room.room_id));
+    }, availableRoomsPerDay[0]);
+
+    console.log("Consistently available rooms across all dates:", availableRooms);
+    return availableRooms;
 };
+
+
 module.exports = Room;
