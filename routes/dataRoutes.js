@@ -36,49 +36,70 @@ router.get('/view', isAdmin, isAuthenticated, async (req, res) => {
 });
 
 router.get('/bookings', isAdmin, isAuthenticated, async (req, res) => {
-    console.log("GET request received at /api/bookings"); 
+    console.log("GET request received at /api/bookings");
+
+    // Extract filter values from the query parameters sent by the client
+    const { programId, courseId } = req.query;
+
     try {
+        // Build the where clause for filtering bookings
+        const whereClause = {};
+        if (courseId) {
+            whereClause.course_id = courseId; // Filter by course ID if provided
+        }
+
+        // Define the include clauses for related models
+        const includeClauses = [
+            {
+                model: Room, // Include the Room model to fetch room details
+                attributes: ['room_number'], // Only fetch the room number
+            },
+            {
+                model: Course, // Include the Course model to fetch course details
+                attributes: ['course_name', 'course_code'], // Fetch course name and code
+                where: programId ? { program_id: programId } : {} // Filter by program ID if provided
+            }
+        ];
+
+        // Fetch bookings based on the filters and includes
         const bookings = await Booking.findAll({
-            include: [
-                {
-                    model: Room,
-                    attributes: ['room_number'],
-                },
-                {
-                    model: Course,
-                    attributes: ['course_name', 'course_code'],
-                }
-            ],
-            attributes: ['room_id', 'start_time', 'end_time', 'course_id']
+            where: whereClause, // Apply the where clause for filtering
+            include: includeClauses, // Include related models (Room and Course)
+            attributes: ['room_id', 'start_time', 'end_time', 'course_id'] // Only fetch required fields
         });
 
+        // Map the results to include only the necessary fields for the response
         const bookingData = bookings.map(booking => ({
             room_id: booking.room_id,
-            room_number: booking.Room.room_number,
+            room_number: booking.Room.room_number, // Room number from the Room model
             course_id: booking.course_id,
-            course_name: booking.Course?.course_name || 'N/A',
-            course_code: booking.Course?.course_code || 'N/A',
+            course_name: booking.Course?.course_name || 'N/A', // Course name from the Course model
+            course_code: booking.Course?.course_code || 'N/A', // Course code from the Course model
             start_time: booking.start_time,
             end_time: booking.end_time
         }));
 
+        // Fetch user data (optional, for additional display purposes)
         const users = await User.findAll({
-            attributes: ['user_id', 'F_Name', 'L_Name'],
+            attributes: ['user_id', 'F_Name', 'L_Name'], // Fetch user details
             include: {
-                model: Role,
-                attributes: ['role_name'] // Fetch role if needed
+                model: Role, // Include the Role model if needed
+                attributes: ['role_name'] // Fetch the role name
             }
         });
 
+        // Log the response for debugging purposes
         console.log({ bookings: bookingData, users });
 
-
+        // Return the filtered booking data and user details as a JSON response
         res.json({ bookings: bookingData, users });
     } catch (error) {
+        // Handle any errors during the query process
         console.error('Error fetching bookings:', error);
         res.status(500).json({ message: 'Error fetching bookings' });
     }
 });
+
 
 router.get('/facultyUsers', async (req, res) => {
     try {
