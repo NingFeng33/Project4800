@@ -28,7 +28,7 @@ body {
     font-weight: bold;
   }
   
-  input, select {
+  .container input, select {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
@@ -38,7 +38,7 @@ body {
   }
   
 /* Buttons */
-button {
+.container button {
   padding: 5px 10px;
   font-size: 14px;
   border: none;
