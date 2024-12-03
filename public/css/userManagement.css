@@ -1,0 +1,248 @@
+/* General Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 1200px; /* Limits the width on large screens */
+}
+
+/* Page Title */
+h2 {
+    color: #007bff;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Form Styles */
+#addUserForm {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+/* Form Labels and Inputs */
+#addUserForm label {
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+#addUserForm input, #addUserForm select {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#addUserForm button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+#addUserForm button:hover {
+    background-color: #0056b3;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table th, table td {
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #007bff;
+    color: white;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.action-buttons button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.action-buttons form {
+    display: inline;
+}
+
+.action-buttons button:hover {
+    background-color: #0056b3;
+}
+
+button.delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+  button.delete:hover {
+    background-color: #c82333;
+}
+    
+
+/* Centered Modal without Background Overlay */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: left;
+}
+
+.modal-header {
+    cursor: move;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.modal-content h3 {
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+.modal-content label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+.modal-content input, .modal-content select {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.modal-content button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.modal-content button:hover {
+    background-color: #0056b3;
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Ensure Form Styling Matches with Main Form */
+#addUserForm label, .modal-content label {
+    font-weight: bold;
+}
+
+#addUserForm input, #addUserForm select, .modal-content input, .modal-content select {
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+
+/* Optional: Hide scrollbar in the modal */
+.modal-content::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #addUserForm {
+        padding: 15px;
+    }
+
+    table th, table td {
+        padding: 10px;
+    }
+
+    .modal-content {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    h2 {
+        font-size: 1.5em;
+    }
+
+    #addUserForm {
+        padding: 10px;
+    }
+
+    table th, table td {
+        padding: 8px;
+    }
+
+    .action-buttons button {
+        padding: 5px 8px;
+        font-size: 0.9em;
+    }
+
+    .modal-content {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Calendar</title>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css' rel='stylesheet' />
+    <style>
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 300px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        #calendar {
+            flex-grow: 1;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        .fc-event {
+            background-color: #3366cc !important;
+            color: white !important;
+            border: none !important;
+            padding: 5px;
+        }
+
+        .fc-daygrid-event, .fc-timegrid-event {
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+
+        .fc-toolbar-title {
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/top_bar') %>
+
+    <main class="main-content">
+    <div class="container">
+        <div class="sidebar">
+            <h3>Filter by Program</h3>
+            <select id="programFilter">
+                <option value="">Select Program</option>
+                <% programs.forEach(function(program) { %>
+                    <option value="<%= program.program_id %>"><%= program.program_name %></option>
+                <% }) %>
+            </select>
+
+            <h3>Filter by Course</h3>
+            <select id="courseFilter">
+                <option value="">Select Course</option>
+                <% courses.forEach(function(course) { %>
+                    <option value="<%= course.course_id %>"><%= course.course_name %></option>
+                <% }) %>
+            </select>
+
+            <button id="applyFilter">Apply Filter</button>
+        </div>
+
+        <div id='calendar'></div>
+    </div>
+    </main>
+
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+
+            window.calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                slotLabelFormat: {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    omitZeroMinute: true,
+                    meridiem: 'short'
+                },
+                eventTimeFormat: {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    meridiem: 'short'
+                },
+                expandRows: true,
+                aspectRatio: 1.5,
+                events: []
+            });
+            window.calendar.render();
+            loadBookingsToCalendar();
+        });
+
+        async function loadBookingsToCalendar() {
+            try {
+                const response = await fetch('/api/bookings');
+                const data = await response.json();
+
+                if (!data.bookings || !data.users) {
+                    console.error("Invalid response format from API:", data);
+                    return;
+                }
+
+                const { bookings, users } = data; // Destructure the response
+                console.log("Bookings:", bookings);
+                console.log("Users:", users);
+
+                window.calendar.removeAllEvents();
+                bookings.forEach(booking => {
+                    window.calendar.addEvent({
+                        title: `Room ${booking.room_number}`,
+                        start: new Date(booking.start_time).toISOString(),
+                        end: new Date(booking.end_time).toISOString(),
+                        extendedProps: {
+                            roomId: booking.room_id,
+                            courseId: booking.course_id
+                        }
+                    });
+                });
+                // Optionally populate a dropdown or UI with users
+                const facultySelector = document.getElementById('facultySelector');
+                if (facultySelector) {
+                    facultySelector.innerHTML = ''; // Clear previous options
+                    users.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.user_id;
+                        option.textContent = `${user.F_Name} ${user.L_Name}`;
+                        facultySelector.appendChild(option);
+                    });
+                }
+                window.calendar.render();
+            } catch (error) {
+                console.error("Failed to load bookings:", error);
+            }
+        }
+    </script>
+</body>
+</html>

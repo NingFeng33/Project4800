@@ -1,0 +1,65 @@
+body {
+    background-color: #f8f9fa; /* Light background */
+}
+
+.list-group-item {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-bottom: 1px solid #ddd;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+h2 {
+    color: #333; /* Subtle color for headers */
+}
+
+.container-fluid {
+    padding-left: 15px; /* Avoid collision with the sidebar */
+    padding-right: 15px;
+}
+
+
+.card {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.card-body {
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    overflow: hidden;
+}
+
+.card-body.collapsed {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.card-body.show {
+    max-height: 500px; /* Adjust as needed */
+    opacity: 1;
+}
+
+.card-header button {
+    border: none;
+    background: transparent;
+    font-size: 1.2rem;
+}
+
+.card-header button:hover {
+    color: #333;
+    cursor: pointer;
+}
+
+.shadow-sm {
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <link rel="stylesheet" href="/css/userManagement.css"> 
+</head>
+<body>
+    <!-- Top Bar -->
+    <%- include('partials/top_bar') %>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <%- include('partials/side_bar') %>
+        <div class="main-content">
+        <h2>User Management</h2>
+
+        <!-- Add User Form -->
+        <h3>Add New User</h3>
+        <form id="addUserForm" action="/admin/users/new" method="POST">
+            <label for="firstName">First Name:</label>
+            <input type="text" name="firstName" required>
+
+            <label for="lastName">Last Name:</label>
+            <input type="text" name="lastName" required>
+
+            <label for="email">Email:</label>
+            <input type="email" name="email" required>
+
+            <label for="role">Role:</label>
+            <select name="role" required>
+                <option value="Admin">Admin</option>
+                <option value="Faculty">Faculty</option>
+                <!-- Add other roles as needed -->
+            </select>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" required>
+
+            <button type="submit" class="edit">Add User</button>
+        </form>
+
+        <!-- User List Table -->
+        <h3>Existing Users</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% users.forEach(user => { %>
+                    <tr>
+                        <td><%= user.F_Name %></td>
+                        <td><%= user.L_Name %></td>
+                        <td><%= user.email %></td>
+                        <td><%= user.Role ? user.Role.role_name : 'N/A' %></td>
+                        <td class="action-buttons">
+                            <button class="edit" onclick="openEditModal('<%= user.user_id %>', '<%= user.F_Name %>', '<%= user.L_Name %>', '<%= user.email %>', '<%= user.Role.role_name %>')">
+                                Edit
+                            </button>                           
+                            <form action="/admin/users/<%= user.user_id %>/delete" method="POST" style="display:inline;" onsubmit="return confirmDelete()">
+                                <button class="delete" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    Edit User Modal
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit User</h3>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <form id="editUserForm" action="/admin/users/edit" method="POST">
+                <input type="hidden" name="user_id" id="editUserId">
+                
+                <label for="editFirstName">First Name:</label>
+                <input type="text" name="firstName" id="editFirstName" required>
+                
+                <label for="editLastName">Last Name:</label>
+                <input type="text" name="lastName" id="editLastName" required>
+                
+                <label for="editEmail">Email:</label>
+                <input type="email" name="email" id="editEmail" required>
+                
+                <label for="editRole">Role:</label>
+                <select name="role" id="editRole" required>
+                    <option value="1">Admin</option>
+                    <option value="2">Faculty</option>
+                    <!-- Add other roles as needed -->
+                </select>
+
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script src="/scripts/userManagement.js"></script>
+</body>
+</html>
